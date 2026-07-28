@@ -1,0 +1,39 @@
+<view class="page image-admin-page">
+  <view class="card">
+    <view class="section-title">云存储图片重生成</view>
+    <view class="title">覆盖生成高清图</view>
+    <view class="subtitle">生成路径固定为 food/{{target}}/{{id}}.jpg，成功后小程序会直接读取云存储。</view>
+  </view>
+
+  <view class="card">
+    <view class="row-between admin-row">
+      <view>
+        <view class="admin-label">当前类型</view>
+        <view class="admin-value">{{targetLabel}} · {{total}} 张</view>
+      </view>
+      <view class="admin-actions">
+        <button class="{{target === 'recipes' ? 'admin-btn admin-btn-active' : 'admin-btn'}}" data-target="recipes" bindtap="switchTarget">菜谱</button>
+        <button class="{{target === 'ingredients' ? 'admin-btn admin-btn-active' : 'admin-btn'}}" data-target="ingredients" bindtap="switchTarget">食材</button>
+      </view>
+    </view>
+
+    <view class="admin-progress">
+      <view class="admin-progress-bar" style="width: {{progressPercent}}%;"></view>
+    </view>
+    <view class="subtitle">进度：{{cursor}} / {{total}}，成功 {{okCount}}，失败 {{failCount}}</view>
+
+    <view class="admin-actions admin-actions-main">
+      <button class="btn-primary admin-main-btn" bindtap="startGenerate" loading="{{running}}" disabled="{{running || !total}}">开始生成</button>
+      <button class="btn-ghost admin-main-btn" bindtap="stopGenerate" disabled="{{!running}}">停止</button>
+      <button class="btn-ghost admin-main-btn" bindtap="resetProgress" disabled="{{running}}">重置进度</button>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">最近日志</view>
+    <view wx:if="{{!logs.length}}" class="subtitle">还没有生成记录。</view>
+    <view wx:for="{{logs}}" wx:key="key" class="{{item.ok ? 'log-line log-line-ok' : 'log-line-error'}}">
+      {{item.text}}
+    </view>
+  </view>
+</view>

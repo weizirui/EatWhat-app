@@ -1,0 +1,21 @@
+{
+  "pages": [
+    "pages/landing/index",
+    "pages/home/index",
+    "pages/match/index",
+    "pages/checkout-success/index",
+    "pages/recipes/index",
+    "pages/settings/index",
+    "pages/tasks/index",
+    "pages/image-admin/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "轻享点餐",
+    "navigationBarBackgroundColor": "#fff8ee",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f7f1e7",
+    "backgroundTextStyle": "dark"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

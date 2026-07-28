@@ -1,0 +1,9 @@
+{
+  "name": "update_collab_profile",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

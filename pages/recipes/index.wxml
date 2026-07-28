@@ -1,0 +1,119 @@
+<view class="page recipes-page" wx:if="{{recipes.length}}">
+  <view wx:for="{{recipes}}" wx:key="id" class="recipe-detail">
+    <image
+      wx:if="{{item.hasImage && !item.imageFailed}}"
+      class="recipe-hero-image"
+      src="{{item.image}}"
+      mode="aspectFit"
+      data-id="{{item.id}}"
+      binderror="handleRecipeImageError"
+    />
+    <view wx:else class="recipe-hero-image recipe-hero-fallback">
+      <view class="recipe-hero-fallback-emoji">{{item.emoji}}</view>
+      <view class="recipe-hero-fallback-copy">{{item.title}}</view>
+    </view>
+    <view class="row-between">
+      <view>
+        <view class="recipe-name">{{item.emoji}} {{item.title}}</view>
+        <view class="recipe-meta">{{item.category}} · {{item.minutes}} 分钟 · {{item.difficulty}}</view>
+      </view>
+      <button
+        class="recipe-toggle"
+        data-id="{{item.id}}"
+        bindtap="toggleRecipeDetail"
+      >
+        {{item.open ? '收起' : '查看详情'}}
+      </button>
+    </view>
+
+    <view wx:if="{{item.open}}">
+      <view class="profile-grid">
+        <view class="profile-card">
+          <view class="profile-label">热量</view>
+          <view class="profile-value">{{item.caloriesText}}</view>
+        </view>
+        <view class="profile-card">
+          <view class="profile-label">蛋白</view>
+          <view class="profile-value">{{item.proteinText}}</view>
+        </view>
+        <view class="profile-card">
+          <view class="profile-label">份量</view>
+          <view class="profile-value">{{item.servingsText}}</view>
+        </view>
+        <view class="profile-card">
+          <view class="profile-label">烹饪方式</view>
+          <view class="profile-value">{{item.cookingMethod}}</view>
+        </view>
+        <view class="profile-card profile-card-wide">
+          <view class="profile-label">口味</view>
+          <view class="tag-row">
+            <text wx:for="{{item.flavorTags}}" wx:for-item="tag" wx:key="*this" class="profile-tag">{{tag}}</text>
+          </view>
+        </view>
+        <view class="profile-card profile-card-wide">
+          <view class="profile-label">适宜人群</view>
+          <view class="tag-row">
+            <text wx:for="{{item.suitableTags}}" wx:for-item="tag" wx:key="*this" class="profile-tag profile-tag-soft">{{tag}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="detail-block">
+        <view class="detail-title">主食材与用量</view>
+        <view class="ingredient-list">
+          <view
+            wx:for="{{item.ingredientLines}}"
+            wx:for-item="ingredient"
+            wx:key="id"
+            class="{{ingredient.className}}"
+          >
+            {{ingredient.text}}
+          </view>
+        </view>
+      </view>
+
+      <view class="detail-block">
+        <view class="detail-title">常备辅料与建议用量</view>
+        <view class="ingredient-list">
+          <view
+            wx:for="{{item.baseSeasoningLines}}"
+            wx:for-item="seasoning"
+            wx:key="id"
+            class="seasoning-pill"
+          >
+            {{seasoning.text}}
+          </view>
+        </view>
+      </view>
+
+      <view class="detail-block" wx:if="{{item.swapLines.length}}">
+        <view class="detail-title">食材替换方案</view>
+        <view wx:for="{{item.swapLines}}" wx:key="id" class="advice-row">
+          {{item.text}}
+        </view>
+      </view>
+
+      <view class="detail-block" wx:if="{{item.conditionAdvice.length}}">
+        <view class="detail-title">特殊身体状态调整建议</view>
+        <view wx:for="{{item.conditionAdvice}}" wx:key="id" class="condition-card">
+          <view class="condition-title">{{item.title}}</view>
+          <view class="condition-copy">{{item.text}}</view>
+        </view>
+      </view>
+
+      <view class="detail-block">
+        <view class="detail-title">步骤</view>
+        <view wx:for="{{item.stepLines}}" wx:for-item="step" wx:key="id" class="step-row">{{step.text}}</view>
+      </view>
+
+      <view class="tip-box">小贴士：{{item.tip}}</view>
+    </view>
+  </view>
+</view>
+
+<view class="page recipes-page" wx:else>
+  <view class="section empty-card">
+    <view class="title empty-title">还没有可展示的菜谱</view>
+    <view class="subtitle">先去匹配页加入订单，提交后这里会直接展示完整做法。</view>
+  </view>
+</view>

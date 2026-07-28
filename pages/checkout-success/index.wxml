@@ -1,0 +1,61 @@
+<view class="page success-page" wx:if="{{order}}">
+  <view class="success-hero card">
+    <view class="success-icon">✓</view>
+    <view class="title">{{source === 'settings' ? '订单详情' : '订单已提交'}}</view>
+    <view class="subtitle">
+      {{source === 'settings' ? '这里保留了这次下单时的菜谱与食材信息。' : '已为你保存本次订单，方便随时回看。'}}
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-title">订单概览</view>
+    <view class="order-line">
+      <text class="order-label">订单号</text>
+      <text class="order-value">{{order.id}}</text>
+    </view>
+    <view class="order-line">
+      <text class="order-label">创建时间</text>
+      <text class="order-value">{{order.created_at}}</text>
+    </view>
+    <view class="order-line">
+      <text class="order-label">菜谱数</text>
+      <text class="order-value">{{recipeCountText}}</text>
+    </view>
+    <view class="order-line">
+      <text class="order-label">食材数</text>
+      <text class="order-value">{{ingredientCountText}}</text>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-title">本次菜谱</view>
+    <view wx:for="{{recipes}}" wx:key="id" class="recipe-line-card">
+      <view class="recipe-line-title">{{item.emoji}} {{item.title}}</view>
+      <view class="recipe-line-meta">{{item.category}} · {{item.minutes}} 分钟 · {{item.difficulty}}</view>
+    </view>
+    <view class="subtitle success-ingredients" wx:if="{{ownedIngredientsText}}">已选菜谱关联食材：{{ownedIngredientsText}}</view>
+    <view class="subtitle success-ingredients" wx:if="{{suggestedIngredientsText}}">待采购：{{suggestedIngredientsText}}</view>
+    <view class="subtitle success-ingredients" wx:if="{{allIngredientsText}}">总食材清单：{{allIngredientsText}}</view>
+  </view>
+
+  <view class="collab-warning" wx:if="{{collabStatusText}}">
+    <view>{{collabStatusText}}</view>
+    <button class="btn-secondary collab-retry-button" bindtap="retryCollaboration" disabled="{{retryingCollaboration}}" loading="{{retryingCollaboration}}">
+      {{retryingCollaboration ? '发送中...' : '重新发送协作清单'}}
+    </button>
+  </view>
+
+  <view class="stack">
+    <button class="btn-primary" bindtap="goRecipes">查看完整做法</button>
+    <button class="btn-secondary" bindtap="goSettings">返回设置</button>
+    <button class="btn-ghost" bindtap="goHome">继续选菜</button>
+  </view>
+</view>
+
+<view class="page success-page" wx:else>
+  <view class="section empty-card">
+    <view class="title empty-title">还没有订单</view>
+    <view class="subtitle">先回到首页选择菜谱，再生成并提交采购清单。</view>
+    <button class="btn-primary" bindtap="goHome">返回首页</button>
+  </view>
+</view>

@@ -1,0 +1,120 @@
+const INGREDIENT_CATEGORIES = [
+  { id: "veg", name: "蔬菜", emoji: "🥬", sort: 1 },
+  { id: "meat", name: "肉禽", emoji: "🍗", sort: 2 },
+  { id: "seafood", name: "海鲜", emoji: "🐟", sort: 3 },
+  { id: "tofu", name: "豆制品", emoji: "🧈", sort: 4 },
+  { id: "egg", name: "蛋奶", emoji: "🥚", sort: 5 },
+  { id: "staple", name: "主食", emoji: "🍚", sort: 6 },
+  { id: "seasoning", name: "调味", emoji: "🧄", sort: 7 },
+  { id: "fruit", name: "水果", emoji: "🍋", sort: 8 },
+];
+
+const INGREDIENTS = [
+  // —— 蔬菜（25 种）——
+  { id: "tomato", name: "番茄", category_id: "veg", emoji: "🍅", tags: ["常见"] },
+  { id: "cucumber", name: "黄瓜", category_id: "veg", emoji: "🥒", tags: ["凉菜"] },
+  { id: "broccoli", name: "西兰花", category_id: "veg", emoji: "🥦", tags: [] },
+  { id: "cauliflower", name: "菜花", category_id: "veg", emoji: "🥦", tags: [] },
+  { id: "potato", name: "土豆", category_id: "veg", emoji: "🥔", tags: [] },
+  { id: "sweet_potato", name: "红薯", category_id: "veg", emoji: "🍠", tags: [] },
+  { id: "bok_choy", name: "小白菜", category_id: "veg", emoji: "🥬", tags: [] },
+  { id: "water_spinach", name: "空心菜", category_id: "veg", emoji: "🌿", tags: [] },
+  { id: "you_mai_cai", name: "油麦菜", category_id: "veg", emoji: "🥬", tags: [] },
+  { id: "eggplant", name: "茄子", category_id: "veg", emoji: "🍆", tags: [] },
+  { id: "shiitake", name: "香菇", category_id: "veg", emoji: "🍄", tags: [] },
+  { id: "enoki", name: "金针菇", category_id: "veg", emoji: "🍄", tags: [] },
+  { id: "king_oyster", name: "杏鲍菇", category_id: "veg", emoji: "🍄", tags: [] },
+  { id: "cabbage", name: "白菜", category_id: "veg", emoji: "🥬", tags: [] },
+  { id: "spinach", name: "菠菜", category_id: "veg", emoji: "🥬", tags: [] },
+  { id: "green_bean", name: "豆角", category_id: "veg", emoji: "🫛", tags: [] },
+  { id: "carrot", name: "胡萝卜", category_id: "veg", emoji: "🥕", tags: [] },
+  { id: "winter_melon", name: "冬瓜", category_id: "veg", emoji: "🥬", tags: [] },
+  { id: "corn", name: "玉米", category_id: "veg", emoji: "🌽", tags: [] },
+  { id: "lettuce", name: "生菜", category_id: "veg", emoji: "🥬", tags: [] },
+  { id: "mushroom", name: "蘑菇", category_id: "veg", emoji: "🍄", tags: [] },
+  { id: "lotus_root", name: "莲藕", category_id: "veg", emoji: "🪷", tags: [] },
+  { id: "taro", name: "芋头", category_id: "veg", emoji: "🟣", tags: [] },
+  { id: "loofah", name: "丝瓜", category_id: "veg", emoji: "🥒", tags: [] },
+  { id: "bitter_melon", name: "苦瓜", category_id: "veg", emoji: "🥒", tags: [] },
+  { id: "onion", name: "洋葱", category_id: "veg", emoji: "🧅", tags: [] },
+  { id: "green_pepper", name: "青椒", category_id: "veg", emoji: "🫑", tags: [] },
+  { id: "red_pepper", name: "红椒", category_id: "veg", emoji: "🌶️", tags: [] },
+  { id: "fungus", name: "木耳", category_id: "veg", emoji: "🍄", tags: ["干货"] },
+  { id: "chive", name: "韭菜", category_id: "veg", emoji: "🌱", tags: [] },
+  { id: "bamboo_shoot", name: "笋", category_id: "veg", emoji: "🎋", tags: [] },
+  { id: "kelp", name: "海带", category_id: "veg", emoji: "🌊", tags: ["干货"] },
+  { id: "edamame", name: "毛豆", category_id: "veg", emoji: "🫛", tags: [] },
+
+  // —— 肉禽（10 种）——
+  { id: "pork_belly", name: "五花肉", category_id: "meat", emoji: "🥩", tags: [] },
+  { id: "pork", name: "猪肉", category_id: "meat", emoji: "🐖", tags: [] },
+  { id: "ground_pork", name: "猪肉馅", category_id: "meat", emoji: "🥩", tags: [] },
+  { id: "chicken_thigh", name: "鸡腿", category_id: "meat", emoji: "🍗", tags: [] },
+  { id: "chicken_breast", name: "鸡胸", category_id: "meat", emoji: "🍗", tags: [] },
+  { id: "chicken_wing", name: "鸡翅", category_id: "meat", emoji: "🍗", tags: [] },
+  { id: "beef", name: "牛肉", category_id: "meat", emoji: "🐄", tags: [] },
+  { id: "ribs", name: "排骨", category_id: "meat", emoji: "🍖", tags: [] },
+  { id: "lamb", name: "羊肉", category_id: "meat", emoji: "🐑", tags: [] },
+  { id: "duck_breast", name: "鸭肉", category_id: "meat", emoji: "🦆", tags: [] },
+
+  // —— 海鲜（9 种）——
+  { id: "shrimp", name: "基围虾", category_id: "seafood", emoji: "🦐", tags: [] },
+  { id: "sea_bass", name: "鲈鱼", category_id: "seafood", emoji: "🐟", tags: [] },
+  { id: "squid", name: "鱿鱼", category_id: "seafood", emoji: "🦑", tags: [] },
+  { id: "hairtail", name: "带鱼", category_id: "seafood", emoji: "🐟", tags: [] },
+  { id: "clam", name: "蛤蜊", category_id: "seafood", emoji: "🦪", tags: [] },
+  { id: "scallop", name: "扇贝", category_id: "seafood", emoji: "🦪", tags: [] },
+  { id: "yellow_croaker", name: "黄鱼", category_id: "seafood", emoji: "🐟", tags: [] },
+  { id: "crucian_carp", name: "鲫鱼", category_id: "seafood", emoji: "🐟", tags: [] },
+  { id: "crab", name: "螃蟹", category_id: "seafood", emoji: "🦀", tags: [] },
+
+  // —— 豆制品（4 种）——
+  { id: "tofu", name: "嫩豆腐", category_id: "tofu", emoji: "🧊", tags: [] },
+  { id: "firm_tofu", name: "老豆腐", category_id: "tofu", emoji: "🟨", tags: [] },
+  { id: "tofu_skin", name: "豆腐皮", category_id: "tofu", emoji: "📜", tags: [] },
+  { id: "yuba", name: "腐竹", category_id: "tofu", emoji: "🟡", tags: [] },
+
+  // —— 蛋奶（4 种）——
+  { id: "egg", name: "鸡蛋", category_id: "egg", emoji: "🥚", tags: ["万能"] },
+  { id: "milk", name: "牛奶", category_id: "egg", emoji: "🥛", tags: [] },
+  { id: "yogurt", name: "酸奶", category_id: "egg", emoji: "🥣", tags: [] },
+  { id: "butter", name: "黄油", category_id: "egg", emoji: "🧈", tags: [] },
+
+  // —— 主食（8 种）——
+  { id: "rice", name: "米饭", category_id: "staple", emoji: "🍚", tags: [] },
+  { id: "noodle", name: "面条", category_id: "staple", emoji: "🍜", tags: [] },
+  { id: "dumpling_wrapper", name: "饺子皮", category_id: "staple", emoji: "🥟", tags: [] },
+  { id: "mantou", name: "馒头", category_id: "staple", emoji: "🍞", tags: [] },
+  { id: "flour", name: "面粉", category_id: "staple", emoji: "🌾", tags: [] },
+  { id: "vermicelli", name: "粉丝", category_id: "staple", emoji: "🍝", tags: [] },
+  { id: "glutinous_rice", name: "糯米", category_id: "staple", emoji: "🍚", tags: [] },
+  { id: "bread", name: "吐司面包", category_id: "staple", emoji: "🍞", tags: [] },
+
+  // —— 调味（12 种）——
+  { id: "scallion", name: "葱", category_id: "seasoning", emoji: "🧅", tags: ["常用"] },
+  { id: "ginger", name: "姜", category_id: "seasoning", emoji: "🫚", tags: ["常用"] },
+  { id: "garlic", name: "蒜", category_id: "seasoning", emoji: "🧄", tags: ["常用"] },
+  { id: "dried_chili", name: "干辣椒", category_id: "seasoning", emoji: "🌶️", tags: [] },
+  { id: "peanut", name: "花生", category_id: "seasoning", emoji: "🥜", tags: [] },
+  { id: "cilantro", name: "香菜", category_id: "seasoning", emoji: "🌿", tags: [] },
+  { id: "sichuan_pepper", name: "花椒", category_id: "seasoning", emoji: "🌶️", tags: [] },
+  { id: "rock_sugar", name: "冰糖", category_id: "seasoning", emoji: "🧊", tags: [] },
+  { id: "yeast", name: "酵母", category_id: "seasoning", emoji: "🧫", tags: [] },
+  { id: "cinnamon", name: "桂皮", category_id: "seasoning", emoji: "🪵", tags: [] },
+  { id: "star_anise", name: "八角", category_id: "seasoning", emoji: "⭐", tags: [] },
+  { id: "sesame", name: "芝麻", category_id: "seasoning", emoji: "⚫", tags: [] },
+  { id: "honey", name: "蜂蜜", category_id: "seasoning", emoji: "🍯", tags: [] },
+
+  // —— 水果（7 种）——
+  { id: "lemon", name: "柠檬", category_id: "fruit", emoji: "🍋", tags: [] },
+  { id: "apple", name: "苹果", category_id: "fruit", emoji: "🍎", tags: [] },
+  { id: "pear", name: "雪梨", category_id: "fruit", emoji: "🍐", tags: [] },
+  { id: "strawberry", name: "草莓", category_id: "fruit", emoji: "🍓", tags: [] },
+  { id: "banana", name: "香蕉", category_id: "fruit", emoji: "🍌", tags: [] },
+  { id: "mango", name: "芒果", category_id: "fruit", emoji: "🥭", tags: [] },
+  { id: "blueberry", name: "蓝莓", category_id: "fruit", emoji: "🫐", tags: [] },
+  // 干货类调味补充
+  { id: "seaweed", name: "紫菜", category_id: "seasoning", emoji: "🟣", tags: ["干货"] },
+];
+
+module.exports = { INGREDIENT_CATEGORIES, INGREDIENTS };

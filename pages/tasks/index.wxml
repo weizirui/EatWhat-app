@@ -1,0 +1,65 @@
+<view class="page tasks-page">
+  <view class="card">
+    <view class="section-title">采购任务</view>
+    <view class="title">协作采购</view>
+    <view class="subtitle">提交后的清单会出现在协作人的“我收到的”中。</view>
+  </view>
+
+  <view class="section">
+    <view class="task-tabs">
+      <view class="{{activeTab === 'received' ? 'task-tab task-tab-active' : 'task-tab'}}" data-tab="received" bindtap="setTab">
+        我收到的
+        <text class="task-tab-count">{{receivedTasks.length}}</text>
+      </view>
+      <view class="{{activeTab === 'sent' ? 'task-tab task-tab-active' : 'task-tab'}}" data-tab="sent" bindtap="setTab">
+        我发出的
+        <text class="task-tab-count">{{sentTasks.length}}</text>
+      </view>
+    </view>
+
+    <view class="task-state" wx:if="{{loading}}">采购任务加载中...</view>
+    <view class="task-state task-state-error" wx:if="{{!loading && errorText}}">{{errorText}}</view>
+    <button
+      class="btn-ghost task-retry"
+      wx:if="{{!loading && errorText}}"
+      bindtap="loadTasks"
+    >
+      重新加载
+    </button>
+    <view class="task-state" wx:if="{{!loading && !errorText && !displayTasks.length}}">
+      {{activeTab === 'received' ? '暂时没有收到采购任务' : '暂时没有发出采购任务'}}
+    </view>
+    <view class="task-list" wx:if="{{!loading && !errorText && displayTasks.length}}">
+      <view wx:for="{{displayTasks}}" wx:key="id" class="task-card">
+        <view class="row-between task-card-head">
+          <view class="task-order-id">{{item.orderId}}</view>
+          <view class="task-head-badges">
+            <text class="task-unread" wx:if="{{item.unread}}">新任务</text>
+            <text class="task-status">{{item.statusText}}</text>
+          </view>
+        </view>
+        <view class="task-peer">{{item.peerText}}</view>
+        <view class="task-line">
+          <text class="task-label">菜谱</text>
+          <text class="task-value">{{item.recipeText}}</text>
+        </view>
+        <view class="task-line">
+          <text class="task-label">采购</text>
+          <text class="task-value">{{item.ingredientText}}</text>
+        </view>
+        <view class="task-time">{{item.createdAtText}}</view>
+        <button
+          wx:if="{{item.actionText}}"
+          class="btn-primary task-action"
+          data-id="{{item.id}}"
+          data-status="{{item.nextStatus}}"
+          bindtap="updateTaskStatus"
+          disabled="{{updatingTaskId}}"
+          loading="{{updatingTaskId === item.id}}"
+        >
+          {{item.actionText}}
+        </button>
+      </view>
+    </view>
+  </view>
+</view>

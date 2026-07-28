@@ -1,0 +1,79 @@
+.image-admin-page {
+  padding-bottom: 48rpx;
+}
+
+.admin-row {
+  align-items: flex-start;
+}
+
+.admin-label {
+  color: #6f7f72;
+  font-size: 24rpx;
+}
+
+.admin-value {
+  color: #24382a;
+  font-size: 34rpx;
+  font-weight: 700;
+  margin-top: 8rpx;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 12rpx;
+}
+
+.admin-btn {
+  background: #eef6ef;
+  border-radius: 8rpx;
+  color: #375a40;
+  font-size: 24rpx;
+  line-height: 60rpx;
+  margin: 0;
+  padding: 0 22rpx;
+}
+
+.admin-btn-active {
+  background: #2f8f4e;
+  color: #ffffff;
+}
+
+.admin-progress {
+  background: #e6eee8;
+  border-radius: 8rpx;
+  height: 16rpx;
+  margin: 28rpx 0 16rpx;
+  overflow: hidden;
+}
+
+.admin-progress-bar {
+  background: #2f8f4e;
+  height: 100%;
+  transition: width 0.2s ease;
+}
+
+.admin-actions-main {
+  flex-wrap: wrap;
+  margin-top: 28rpx;
+}
+
+.admin-main-btn {
+  flex: 1;
+  min-width: 180rpx;
+}
+
+.log-line {
+  border-bottom: 1rpx solid #edf2ee;
+  color: #526454;
+  font-size: 24rpx;
+  line-height: 1.5;
+  padding: 14rpx 0;
+}
+
+.log-line-ok {
+  color: #247a43;
+}
+
+.log-line-error {
+  color: #b24a3b;
+}

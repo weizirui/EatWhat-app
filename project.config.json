@@ -1,0 +1,62 @@
+{
+  "appid": "wxb8712ef665480833",
+  "projectname": "轻享点餐小程序",
+  "compileType": "miniprogram",
+  "miniprogramRoot": ".",
+  "srcMiniprogramRoot": ".",
+  "cloudfunctionRoot": "cloudfunctions/",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true,
+    "compileHotReLoad": true
+  },
+  "packOptions": {
+    "ignore": [
+      {
+        "type": "folder",
+        "value": "node_modules"
+      },
+      {
+        "type": "folder",
+        "value": "dist"
+      },
+      {
+        "type": "folder",
+        "value": "src"
+      },
+      {
+        "type": "file",
+        "value": "package-lock.json"
+      },
+      {
+        "type": "file",
+        "value": "package.json"
+      },
+      {
+        "type": "file",
+        "value": "vite.config.ts"
+      },
+      {
+        "type": "file",
+        "value": "tsconfig.json"
+      },
+      {
+        "type": "file",
+        "value": "postcss.config.js"
+      },
+      {
+        "type": "file",
+        "value": "tailwind.config.js"
+      },
+      {
+        "type": "file",
+        "value": "eslint.config.js"
+      }
+    ]
+  },
+  "simulatorPluginLibVersion": {},
+  "condition": {}
+}

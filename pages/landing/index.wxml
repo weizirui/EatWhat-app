@@ -1,0 +1,160 @@
+<view class="page landing-page">
+  <view class="pu-header">
+    <view class="pu-top row-between">
+      <view>
+        <view class="pu-location">轻享点餐 · 今晚吃啥</view>
+        <view class="pu-location-sub">先看推荐菜，再自动生成采购清单</view>
+      </view>
+      <view class="pu-avatar">鲜</view>
+    </view>
+    <view class="pu-search" bindtap="goHome">
+      <text class="pu-search-icon">⌕</text>
+      <text class="pu-search-text">搜索食材、菜名、家常菜灵感</text>
+    </view>
+  </view>
+
+  <view class="pu-banner">
+    <view class="pu-banner-copy">
+        <view class="pu-badge">今日主推</view>
+        <view class="pu-banner-title">{{season.headline}}</view>
+        <view class="pu-banner-text">{{season.description}}</view>
+        <view class="pu-banner-actions">
+        <button class="btn-primary pu-banner-btn" bindtap="goHome">去选菜谱</button>
+        </view>
+      </view>
+  </view>
+
+  <view class="section pu-section">
+    <view class="row-between">
+      <view class="section-title">{{season.title}}</view>
+      <text class="muted">{{season.subtitle}}</text>
+    </view>
+    <view class="pu-grid-list">
+      <view
+        wx:for="{{seasonalRecipes}}"
+        wx:key="id"
+        class="pu-grid-card pu-season-card"
+        data-id="{{item.id}}"
+        data-ingredient-ids="{{item.ingredientIds}}"
+        bindtap="pickRecipe"
+      >
+        <image
+          wx:if="{{item.hasImage && !item.imageFailed}}"
+          class="pu-grid-image"
+          src="{{item.image}}"
+          mode="aspectFit"
+          data-id="{{item.id}}"
+          binderror="handleSeasonalImageError"
+        />
+        <view wx:else class="pu-grid-image pu-image-fallback">
+          <view class="pu-image-fallback-emoji">{{item.emoji}}</view>
+          <view class="pu-image-fallback-copy">{{item.title}}</view>
+        </view>
+        <view class="pu-grid-body">
+          <view class="pu-grid-title">{{item.emoji}} {{item.title}}</view>
+          <view class="pu-grid-sub">{{item.subtitle}}</view>
+          <view class="pu-grid-cta">一键生成采购清单</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="section pu-section">
+    <view class="row-between">
+      <view class="section-title">今日汤品</view>
+      <text class="muted">想喝点热乎的就从这里选</text>
+    </view>
+    <view class="pu-grid-list">
+      <view
+        wx:for="{{soupRecipes}}"
+        wx:key="id"
+        class="pu-grid-card pu-soup-card"
+        data-id="{{item.id}}"
+        data-ingredient-ids="{{item.ingredientIds}}"
+        bindtap="pickRecipe"
+      >
+        <image
+          wx:if="{{item.hasImage && !item.imageFailed}}"
+          class="pu-grid-image"
+          src="{{item.image}}"
+          mode="aspectFit"
+          data-id="{{item.id}}"
+          binderror="handleSoupImageError"
+        />
+        <view wx:else class="pu-grid-image pu-image-fallback">
+          <view class="pu-image-fallback-emoji">{{item.emoji}}</view>
+          <view class="pu-image-fallback-copy">{{item.title}}</view>
+        </view>
+        <view class="pu-grid-body">
+          <view class="pu-grid-title">{{item.emoji}} {{item.title}}</view>
+          <view class="pu-grid-sub">{{item.subtitle}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="section pu-section">
+    <view class="row-between">
+      <view class="section-title">爆款推荐</view>
+      <text class="muted" bindtap="goHome">看更多菜谱</text>
+    </view>
+    <view class="pu-hot-grid">
+      <view
+        wx:for="{{hotRecipes}}"
+        wx:key="id"
+        class="pu-hot-card"
+        data-id="{{item.id}}"
+        data-ingredient-ids="{{item.ingredientIds}}"
+        bindtap="pickRecipe"
+      >
+        <image
+          wx:if="{{item.hasImage && !item.imageFailed}}"
+          class="pu-hot-image"
+          src="{{item.image}}"
+          mode="aspectFit"
+          data-id="{{item.id}}"
+          binderror="handleHotImageError"
+        />
+        <view wx:else class="pu-hot-image pu-image-fallback pu-hot-image-fallback">
+          <view class="pu-image-fallback-emoji">{{item.emoji}}</view>
+          <view class="pu-image-fallback-copy">{{item.title}}</view>
+        </view>
+        <view class="pu-hot-body">
+          <view class="pu-hot-title">{{item.emoji}} {{item.title}}</view>
+          <view class="pu-hot-sub">{{item.subtitle}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="section pu-section">
+    <view class="section-title">怎么使用</view>
+    <view class="step-list">
+      <view class="step-item">
+        <view class="step-index">1</view>
+        <view class="step-copy">
+          <view class="step-title">先挑今晚想做的菜</view>
+          <view class="muted">真实图片 + 搜索 + 分类，选菜速度更快。</view>
+        </view>
+      </view>
+      <view class="step-item">
+        <view class="step-index">2</view>
+        <view class="step-copy">
+          <view class="step-title">自动整理出主食材清单</view>
+          <view class="muted">少掉手工整理采购项这一步，清单会自动汇总。</view>
+        </view>
+      </view>
+      <view class="step-item">
+        <view class="step-index">3</view>
+        <view class="step-copy">
+          <view class="step-title">核对清单后直接提交</view>
+          <view class="muted">提交后还能继续查看详细做法，买菜和做菜连在一起。</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="pu-settings-fab" bindtap="goSettings">
+    <text class="pu-settings-icon">⚙</text>
+  </view>
+</view>

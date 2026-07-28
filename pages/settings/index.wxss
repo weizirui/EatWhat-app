@@ -1,0 +1,222 @@
+.settings-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.settings-section-head {
+  align-items: flex-start;
+  gap: 18rpx;
+}
+
+.section-subtitle {
+  margin-top: 10rpx;
+  color: #7f8d83;
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+.orders-count-badge {
+  min-width: 76rpx;
+  height: 76rpx;
+  padding: 0 18rpx;
+  border-radius: 999rpx;
+  background: #f1f8f3;
+  color: #1f6a3d;
+  font-size: 30rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.orders-list {
+  margin-top: 20rpx;
+}
+
+.order-card {
+  padding: 24rpx;
+  border-radius: 24rpx;
+  background: #fffdf9;
+  border: 2rpx solid rgba(47, 74, 58, 0.08);
+  gap: 16rpx;
+}
+
+.order-card-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.order-card-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #2f4a3a;
+  word-break: break-all;
+}
+
+.order-card-meta {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: #8b948d;
+}
+
+.order-card-summary {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: #516259;
+}
+
+.order-card-action {
+  flex: 0 0 136rpx;
+  min-height: 64rpx;
+  border-radius: 999rpx;
+  background: #f3faf5;
+  color: #1f6a3d;
+  font-size: 24rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.orders-empty {
+  margin-top: 20rpx;
+}
+
+.collab-invite-row {
+  display: flex;
+  gap: 16rpx;
+  align-items: center;
+}
+
+.collab-invite-code {
+  flex: 1;
+}
+
+.field-helper {
+  margin-top: 10rpx;
+  color: #7f8d83;
+  font-size: 22rpx;
+  line-height: 1.6;
+}
+
+.invite-error {
+  margin-top: 10rpx;
+  padding: 16rpx 18rpx;
+  border-left: 6rpx solid #b85b48;
+  background: #fff5f1;
+  color: #974536;
+  font-size: 22rpx;
+  line-height: 1.55;
+  word-break: break-all;
+}
+
+.invite-code-box {
+  font-family: monospace;
+  letter-spacing: 2rpx;
+}
+
+.collab-action {
+  flex: 0 0 220rpx;
+}
+
+.collab-empty {
+  background: #fffdf9;
+  border: 2rpx solid rgba(47, 74, 58, 0.08);
+  border-radius: 20rpx;
+  padding: 20rpx 24rpx;
+  color: #7f8d83;
+  line-height: 1.6;
+  box-sizing: border-box;
+}
+
+.collab-list {
+  gap: 16rpx;
+}
+
+.collab-retry-btn {
+  min-height: 68rpx;
+  height: 68rpx;
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  line-height: 68rpx;
+}
+
+.collab-card {
+  padding: 20rpx 24rpx;
+  border-radius: 20rpx;
+  background: #fffdf9;
+  border: 2rpx solid rgba(47, 74, 58, 0.08);
+  gap: 16rpx;
+}
+
+.collab-card-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.collab-card-main {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  flex-wrap: wrap;
+}
+
+.collab-name {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #2f4a3a;
+}
+
+.collab-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44rpx;
+  padding: 0 16rpx;
+  border-radius: 999rpx;
+  background: rgba(35, 163, 86, 0.1);
+  color: #1a7b43;
+  font-size: 22rpx;
+  box-sizing: border-box;
+}
+
+.collab-meta {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: #8b948d;
+  word-break: break-all;
+}
+
+.collab-default-btn {
+  width: 168rpx;
+  min-height: 58rpx;
+  margin: 0;
+  padding: 0 12rpx;
+  font-size: 22rpx;
+  line-height: 58rpx;
+}
+
+.collab-card-actions {
+  flex: 0 0 168rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.collab-remove-btn {
+  width: 168rpx;
+  min-height: 52rpx;
+  margin: 0;
+  padding: 0 12rpx;
+  border: 0;
+  border-radius: 14rpx;
+  background: transparent;
+  color: #a45347;
+  font-size: 22rpx;
+  line-height: 52rpx;
+}
+
+.collab-remove-btn::after {
+  border: 0;
+}

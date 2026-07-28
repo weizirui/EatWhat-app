@@ -1,0 +1,136 @@
+<view class="page settings-page">
+  <view class="card">
+    <view class="section-title">我的</view>
+    <view class="title">订单和协作都在这里</view>
+    <view class="subtitle">
+      订单会保存在手机里，协作人和采购任务也统一从这里进入，入口更集中一些。
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="row-between settings-section-head">
+      <view>
+        <view class="section-title">已保存订单</view>
+        <view class="section-subtitle">最近 {{ordersCount}} 条，本地保存，随时回看。</view>
+      </view>
+      <view class="orders-count-badge">{{ordersCount}}</view>
+    </view>
+    <view class="orders-empty collab-empty" wx:if="{{!recentOrders.length}}">
+      还没有订单，先去首页选菜谱并提交一单。
+    </view>
+    <view class="stack orders-list" wx:else>
+      <view wx:for="{{recentOrders}}" wx:key="id" class="order-card row-between" data-id="{{item.id}}" bindtap="openOrderDetail">
+        <view class="order-card-copy">
+          <view class="order-card-title">{{item.id}}</view>
+          <view class="order-card-meta">{{item.createdAt}}</view>
+          <view class="order-card-summary">{{item.summaryText}}</view>
+        </view>
+        <view class="order-card-action">查看详情</view>
+      </view>
+    </view>
+    <button class="btn-ghost" wx:if="{{ordersCount}}" bindtap="clearOrders">清空订单记录</button>
+  </view>
+
+  <view class="section">
+    <view class="row-between settings-section-head">
+      <view>
+        <view class="section-title">协作人管理</view>
+        <view class="section-subtitle">邀请码绑定、多对多协作、默认采购人都在这里处理。</view>
+      </view>
+    </view>
+    <view class="stack">
+      <view>
+        <text class="field-label">我的协作昵称</text>
+        <input
+          class="field-input"
+          value="{{collabDisplayName}}"
+          placeholder="例如：小王"
+          maxlength="12"
+          bindinput="updateCollabDisplayName"
+          bindblur="saveCollabDisplayName"
+        />
+        <view class="field-helper">对方会通过这个名字识别你。</view>
+      </view>
+      <view>
+        <text class="field-label">邀请码</text>
+        <view class="collab-invite-row">
+          <view class="field-input collab-invite-code invite-code-box">{{inviteCode || '点下方按钮生成邀请码'}}</view>
+          <button
+            class="btn-secondary collab-action"
+            bindtap="createInviteCode"
+            disabled="{{inviteCreating}}"
+            loading="{{inviteCreating}}"
+          >
+            {{inviteCreating ? '生成中...' : '生成邀请码'}}
+          </button>
+        </view>
+        <view class="field-helper" wx:if="{{inviteCodeExpiresText}}">
+          {{inviteCodeExpiresText}}，过期后可重新生成。
+        </view>
+      </view>
+      <view>
+        <text class="field-label">输入邀请码</text>
+        <view class="collab-invite-row">
+          <input
+            class="field-input collab-invite-code"
+            value="{{inviteCodeInput}}"
+            placeholder="请输入 6 位邀请码"
+            maxlength="6"
+            bindinput="updateInviteCodeInput"
+            bindconfirm="redeemInviteCode"
+          />
+          <button class="btn-ghost collab-action" bindtap="redeemInviteCode" disabled="{{inviteCodeInput.length < 6 || inviteRedeeming}}" loading="{{inviteRedeeming}}">
+            {{inviteRedeeming ? '绑定中...' : '立即绑定'}}
+          </button>
+        </view>
+        <view class="field-helper">邀请码会自动转成大写，只保留 6 位字母和数字。</view>
+        <view class="invite-error" wx:if="{{inviteErrorText}}">{{inviteErrorText}}</view>
+      </view>
+      <view>
+        <text class="field-label">默认采购人</text>
+        <view class="collab-empty" wx:if="{{!defaultReceiverOpenid}}">绑定后可把某位协作人设为默认采购人</view>
+        <view class="collab-empty" wx:else>
+          当前默认采购人：{{defaultReceiverName || '协作人'}}。提交时会优先推荐给 TA。
+        </view>
+      </view>
+      <view>
+        <text class="field-label">已绑定协作人</text>
+        <view class="collab-empty" wx:if="{{collaboratorsLoading}}">协作人列表加载中...</view>
+        <view class="collab-empty" wx:if="{{!collaboratorsLoading && collaboratorsError}}">{{collaboratorsError}}</view>
+        <button
+          class="btn-ghost collab-retry-btn"
+          wx:if="{{!collaboratorsLoading && collaboratorsError}}"
+          bindtap="loadCollaborators"
+        >
+          重新加载
+        </button>
+        <view class="collab-empty" wx:if="{{!collaboratorsLoading && !collaboratorsError && !collaborators.length}}">还没有协作人，先用邀请码绑定。</view>
+        <view class="stack collab-list" wx:if="{{!collaboratorsLoading && !collaboratorsError && collaborators.length}}">
+          <view wx:for="{{collaborators}}" wx:key="partnerOpenid" class="collab-card row-between">
+            <view class="collab-card-copy">
+              <view class="collab-card-main">
+                <view class="collab-name">{{item.partnerName}}</view>
+                <view class="collab-badge" wx:if="{{defaultReceiverOpenid === item.partnerOpenid}}">默认采购人</view>
+              </view>
+              <view class="collab-meta">已绑定，可接收采购任务</view>
+            </view>
+            <view class="collab-card-actions">
+              <button
+                class="{{defaultReceiverOpenid === item.partnerOpenid ? 'btn-secondary collab-default-btn' : 'btn-ghost collab-default-btn'}}"
+                data-openid="{{item.partnerOpenid}}"
+                bindtap="setDefaultReceiver"
+                disabled="{{defaultReceiverOpenid === item.partnerOpenid}}"
+              >
+                {{defaultReceiverOpenid === item.partnerOpenid ? '已设默认' : '设为默认'}}
+              </button>
+              <button class="collab-remove-btn" data-openid="{{item.partnerOpenid}}" bindtap="removeCollaborator">解除</button>
+            </view>
+          </view>
+        </view>
+      </view>
+      <button class="btn-secondary" bindtap="navigateToTasks">
+        {{unreadTaskCount ? '查看采购任务（' + unreadTaskCount + ' 条新任务）' : '查看采购任务'}}
+      </button>
+    </view>
+  </view>
+</view>

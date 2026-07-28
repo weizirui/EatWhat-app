@@ -1,0 +1,155 @@
+<view class="page home-page">
+  <view class="market-hero">
+    <view class="market-hero-top row-between">
+      <view>
+        <view class="market-eyebrow">今日菜市</view>
+        <view class="market-title">选菜谱，自动出食材</view>
+      </view>
+      <text class="muted mini-link" bindtap="goSettings">设置</text>
+    </view>
+    <view class="market-subtitle">已选 {{selectedRecipeCount}} 道菜，自动汇总 {{totalIngredientCount}} 项主食材，支持搜索、分类和真实图片浏览。</view>
+    <view class="market-search">
+      <text class="market-search-icon">⌕</text>
+      <input
+        class="market-search-input"
+        placeholder="搜索菜谱 / 分类 / 难度"
+        value="{{searchQuery}}"
+        bindinput="updateSearch"
+        confirm-type="search"
+      />
+      <text wx:if="{{searchQuery}}" class="market-search-clear" bindtap="clearSearch">清空</text>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="row-between">
+      <view class="section-title">菜谱分类</view>
+      <text class="muted">{{resultHint}}</text>
+    </view>
+    <scroll-view class="category-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="category-row">
+        <view
+          wx:for="{{categories}}"
+          wx:key="id"
+          class="{{item.className}}"
+          data-id="{{item.id}}"
+          bindtap="setCategory"
+        >
+          {{item.emoji}} {{item.name}}
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view class="ingredient-grid">
+    <view
+      wx:for="{{recipes}}"
+      wx:key="id"
+      class="{{item.className}}"
+      data-id="{{item.id}}"
+      bindtap="toggleRecipe"
+    >
+      <image
+        wx:if="{{item.hasImage && !item.imageFailed}}"
+        class="ingredient-image"
+        src="{{item.image}}"
+        mode="aspectFit"
+        data-id="{{item.id}}"
+        binderror="handleIngredientImageError"
+      />
+      <view wx:else class="ingredient-image ingredient-image-fallback">
+        <view class="image-fallback-emoji">{{item.emoji}}</view>
+        <view class="image-fallback-copy">{{item.name}}</view>
+      </view>
+      <view class="ingredient-top">
+        <view class="ingredient-name">{{item.emoji}} {{item.title}}</view>
+      </view>
+      <view class="ingredient-category">{{item.categoryName}} · {{item.minutes}} 分钟 · {{item.difficulty}}</view>
+      <view class="ingredient-category" wx:if="{{item.ingredientSummary}}">主食材：{{item.ingredientSummary}}</view>
+      <view class="ingredient-state">{{item.stateText}}</view>
+    </view>
+  </view>
+
+  <view class="bottom-space"></view>
+
+  <view wx:if="{{cartOpen}}" class="cart-mask" bindtap="closeCart"></view>
+
+  <view class="{{cartSheetClass}}">
+    <view class="cart-handle"></view>
+    <view class="row-between cart-head">
+      <view>
+        <view class="cart-title">已选菜谱</view>
+        <view class="cart-subtitle">这里能快速确认今晚打算做的菜和采购食材</view>
+      </view>
+      <view class="cart-head-actions">
+        <text class="cart-clear" bindtap="clearAll">清空</text>
+        <text class="cart-close" bindtap="closeCart">收起</text>
+      </view>
+    </view>
+
+    <view wx:if="{{selectedRecipes.length || purchaseIngredients.length}}" class="cart-list">
+      <view wx:if="{{selectedRecipes.length}}" class="cart-group">
+        <view class="cart-group-title">已选菜谱</view>
+        <view wx:for="{{selectedRecipes}}" wx:key="id" class="cart-item">
+          <image
+            wx:if="{{item.hasImage && !item.imageFailed}}"
+            class="cart-item-image"
+            src="{{item.image}}"
+            mode="aspectFit"
+            data-id="{{item.id}}"
+            binderror="handleOwnedImageError"
+          />
+          <view wx:else class="cart-item-image cart-item-image-fallback">
+            <view class="cart-image-fallback-emoji">{{item.emoji}}</view>
+          </view>
+          <view class="cart-item-copy">
+            <view class="cart-item-name">{{item.emoji}} {{item.title}}</view>
+            <view class="cart-item-meta">{{item.metaText}}</view>
+          </view>
+          <text class="cart-item-remove" data-id="{{item.id}}" bindtap="removeSelected">移除</text>
+        </view>
+      </view>
+
+      <view wx:if="{{purchaseIngredients.length}}" class="cart-group">
+        <view class="cart-group-title cart-group-title-soft">待采购食材</view>
+        <view wx:for="{{purchaseIngredients}}" wx:key="id" class="cart-item cart-item-soft">
+          <image
+            wx:if="{{item.hasImage && !item.imageFailed}}"
+            class="cart-item-image cart-ingredient-image"
+            src="{{item.image}}"
+            mode="aspectFit"
+            data-id="{{item.id}}"
+            binderror="handleSuggestedImageError"
+          />
+          <view wx:else class="cart-item-image cart-item-image-fallback">
+            <view class="cart-image-fallback-emoji">{{item.emoji}}</view>
+          </view>
+          <view class="cart-item-copy">
+            <view class="cart-item-name">{{item.emoji}} {{item.name}}</view>
+            <view class="cart-item-meta">{{item.metaText}}</view>
+          </view>
+          <text class="cart-item-remove">{{item.countText}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view wx:else class="cart-empty">
+      <view class="cart-empty-title">还没有选菜谱</view>
+      <view class="subtitle">先从上面挑几道菜，这里会自动汇总采购食材。</view>
+    </view>
+  </view>
+
+  <view class="fab-bar">
+    <view class="fab-summary" bindtap="toggleCart">
+      <view class="fab-count">{{totalIngredientCount}}</view>
+      <view class="fab-copy">
+        <view class="fab-title">采购清单</view>
+        <view class="fab-desc">{{selectedPreviewText}}</view>
+      </view>
+    </view>
+    <button class="fab-primary fab-primary-soft" bindtap="goMatch">
+      <view class="fab-primary-title">生成食材</view>
+      <view class="fab-primary-sub">查看采购清单</view>
+    </button>
+  </view>
+</view>
