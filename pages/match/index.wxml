@@ -1,5 +1,5 @@
 <view class="page match-page">
-  <view class="card">
+  <view class="card match-hero-card">
     <view class="section-title">已选菜谱</view>
     <view class="title">已经帮你汇总好需要采购的主食材</view>
     <view class="subtitle" wx:if="{{selectedRecipesText}}">今晚想做：{{selectedRecipesText}}</view>
@@ -13,22 +13,10 @@
       <view class="subtitle">共 {{ingredientCount}} 项主食材，对应 {{recipeCount}} 道菜。</view>
     </view>
 
-    <view wx:for="{{purchaseIngredients}}" wx:key="id" class="recipe-card">
-      <image
-        wx:if="{{item.hasImage && !item.imageFailed}}"
-        class="recipe-cover ingredient-cover"
-        src="{{item.image}}"
-        mode="aspectFit"
-        data-id="{{item.id}}"
-        binderror="handleIngredientImageError"
-      />
-      <view wx:else class="recipe-cover recipe-cover-fallback">
-        <view class="recipe-cover-fallback-emoji">{{item.emoji}}</view>
-        <view class="recipe-cover-fallback-copy">{{item.name}}</view>
-      </view>
+    <view wx:for="{{purchaseIngredients}}" wx:key="id" class="recipe-card ingredient-card-row">
       <view class="row-between recipe-head">
         <view>
-          <view class="recipe-title">{{item.emoji}} {{item.name}}</view>
+          <view class="recipe-title">{{item.name}}</view>
           <view class="recipe-meta">用于：{{item.recipeTitlesText}}</view>
         </view>
         <view class="recipe-badge recipe-badge-ok">
@@ -47,21 +35,9 @@
 
       <view class="stack more-recipes-list">
         <view wx:for="{{selectedRecipes}}" wx:key="id" class="recipe-card recipe-card-compact">
-          <image
-            wx:if="{{item.hasImage && !item.imageFailed}}"
-            class="recipe-cover recipe-cover-compact picked-recipe-cover"
-            src="{{item.image}}"
-            mode="aspectFit"
-            data-id="{{item.id}}"
-            binderror="handleRecipeImageError"
-          />
-          <view wx:else class="recipe-cover recipe-cover-fallback recipe-cover-compact">
-            <view class="recipe-cover-fallback-emoji">{{item.emoji}}</view>
-            <view class="recipe-cover-fallback-copy">{{item.title}}</view>
-          </view>
           <view class="row-between recipe-head">
             <view>
-              <view class="recipe-title">{{item.emoji}} {{item.title}}</view>
+              <view class="recipe-title">{{item.title}}</view>
               <view class="recipe-meta">{{item.category}} · {{item.minutes}} 分钟 · {{item.difficulty}}</view>
             </view>
             <view class="recipe-badge recipe-badge-ok">
@@ -126,14 +102,14 @@
           data-id="{{item.id}}"
           bindtap="setActivePicked"
         >
-          {{item.emoji}} {{item.title}}
+          {{item.title}}
         </view>
       </view>
     </scroll-view>
 
     <scroll-view wx:if="{{activePickedDetail}}" class="picked-body" scroll-y enhanced>
       <view class="picked-meta">
-        <view class="picked-meta-title">{{activePickedDetail.emoji}} {{activePickedDetail.title}}</view>
+        <view class="picked-meta-title">{{activePickedDetail.title}}</view>
         <view class="picked-meta-sub">{{activePickedDetail.caloriesText}} · {{activePickedDetail.proteinText}}</view>
         <view class="picked-meta-sub">{{activePickedDetail.servingsText}} · {{activePickedDetail.cookingMethod}}</view>
       </view>

@@ -4,30 +4,12 @@ const {
   generateOrderId,
   formatTime,
 } = require("../../utils/format");
-const {
-  recipeImage,
-  ingredientImage,
-  hydrateImageList,
-  isCloudFileId,
-  fallbackImageAfterError,
-} = require("../../utils/image");
 const { buildRecipeProfile } = require("../../utils/recipe-profile");
 const { getIngredientsByIds } = require("../../utils/catalog");
 const { callCloud } = require("../../utils/cloud");
 const { callContainer } = require("../../utils/container");
-const { generateRecipeImageIfMissing } = require("../../utils/ai-image");
-
-function buildImageState(url) {
-  const canUseDirectly = Boolean(url) && !isCloudFileId(url);
-  return {
-    image: url || "",
-    hasImage: canUseDirectly,
-    imageFailed: false,
-  };
-}
 
 function serializeRecipe(recipe) {
-  const image = recipeImage(recipe.id);
   return {
     id: recipe.id,
     title: recipe.title,
@@ -38,12 +20,10 @@ function serializeRecipe(recipe) {
     ingredientText: getIngredientsByIds(recipe.ingredient_ids || [])
       .map((ingredient) => ingredient.name)
       .join("、"),
-    ...buildImageState(image),
   };
 }
 
 function serializeIngredient(item) {
-  const image = ingredientImage(item.id);
   return {
     id: item.id,
     name: item.name,
@@ -51,18 +31,15 @@ function serializeIngredient(item) {
     count: item.count,
     countText: `x${item.count}`,
     recipeTitlesText: item.recipeTitles.join("、"),
-    ...buildImageState(image),
   };
 }
 
 function serializePicked(recipe, allIngredientIds) {
   const profile = buildRecipeProfile(recipe, allIngredientIds);
-  const image = recipeImage(recipe.id);
   return {
     id: recipe.id,
     title: recipe.title,
     emoji: recipe.emoji,
-    ...buildImageState(image),
     caloriesText: profile.caloriesText,
     proteinText: profile.proteinText,
     servingsText: profile.servingsText,
@@ -210,17 +187,7 @@ Page({
       pickedPanelClass: pickedPanelOpen ? "picked-sheet picked-sheet-open" : "picked-sheet",
     });
 
-    hydrateImageList(selectedRecipes).then((nextSelectedRecipes) => {
-      this.setData({
-        selectedRecipes: nextSelectedRecipes,
-      });
-    });
-    hydrateImageList(purchaseIngredients).then((nextPurchaseIngredients) => {
-      this.setData({
-        purchaseIngredients: nextPurchaseIngredients,
-      });
-      this.loadRemoteIngredients(selectedRecipeIds);
-    });
+    this.loadRemoteIngredients(selectedRecipeIds);
   },
 
   /**
@@ -250,7 +217,6 @@ Page({
         countText: `x${item.count}`,
         recipeTitles: item.recipeTitles || [],
         recipeTitlesText: (item.recipeTitles || []).join("、"),
-        ...buildImageState(ingredientImage(item.id)),
       }));
       this.setData({
         purchaseIngredients,
@@ -258,11 +224,6 @@ Page({
         purchaseIngredientsText: purchaseIngredients
           .map((item) => `${item.emoji} ${item.name} x${item.count}`)
           .join("、"),
-      });
-      hydrateImageList(purchaseIngredients).then((nextItems) => {
-        this.setData({
-          purchaseIngredients: nextItems,
-        });
       });
     } catch (error) {
       // 云托管不可用时继续使用上方本地计算结果，保证核心点菜流程可用。
@@ -387,77 +348,5 @@ Page({
     });
   },
 
-  markImageFailed(listKey, id) {
-    if (!id) {
-      return;
-    }
-    const nextList = (this.data[listKey] || []).map((item) => {
-      if (item.id !== id) {
-        return item;
-      }
-      const fallback = fallbackImageAfterError(item);
-      if (fallback) {
-        return fallback;
-      }
-      return Object.assign({}, item, {
-        imageFailed: true,
-      });
-    });
-    this.setData({
-      [listKey]: nextList,
-    });
-  },
-
-  /**
-   * 已选菜谱图缺失时生成到固定云存储路径，并刷新生成清单页展示。
-   * @param {string} id 菜谱 ID。
-   * @returns {Promise<void>} 生成失败时保持兜底展示。
-   */
-  async generateSelectedRecipeImage(id) {
-    const list = this.data.selectedRecipes || [];
-    const recipe = list.find((item) => item.id === id);
-    if (!recipe || recipe.imageGenerating) {
-      return;
-    }
-
-    this.setData({
-      selectedRecipes: list.map((item) => item.id === id
-        ? Object.assign({}, item, { imageGenerating: true })
-        : item),
-    });
-
-    try {
-      const result = await generateRecipeImageIfMissing(recipe);
-      const currentList = this.data.selectedRecipes || [];
-      this.setData({
-        selectedRecipes: currentList.map((item) => item.id === id
-          ? Object.assign({}, item, {
-              image: result.image,
-              hasImage: Boolean(result.image),
-              imageFailed: false,
-              imageGenerating: false,
-              fallbackImage: "",
-            })
-          : item),
-      });
-    } catch (error) {
-      console.warn("[image] 已选菜谱图生成失败", { id, error });
-      const currentList = this.data.selectedRecipes || [];
-      this.setData({
-        selectedRecipes: currentList.map((item) => item.id === id
-          ? Object.assign({}, item, { imageGenerating: false, imageFailed: true })
-          : item),
-      });
-    }
-  },
-
-  handleRecipeImageError(event) {
-    const id = event.currentTarget.dataset.id;
-    this.markImageFailed("selectedRecipes", id);
-    this.generateSelectedRecipeImage(id);
-  },
-
-  handleIngredientImageError(event) {
-    this.markImageFailed("purchaseIngredients", event.currentTarget.dataset.id);
-  },
 });
+

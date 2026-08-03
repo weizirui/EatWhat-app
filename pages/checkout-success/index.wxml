@@ -30,7 +30,7 @@
   <view class="section">
     <view class="section-title">本次菜谱</view>
     <view wx:for="{{recipes}}" wx:key="id" class="recipe-line-card">
-      <view class="recipe-line-title">{{item.emoji}} {{item.title}}</view>
+      <view class="recipe-line-title">{{item.title}}</view>
       <view class="recipe-line-meta">{{item.category}} · {{item.minutes}} 分钟 · {{item.difficulty}}</view>
     </view>
     <view class="subtitle success-ingredients" wx:if="{{ownedIngredientsText}}">已选菜谱关联食材：{{ownedIngredientsText}}</view>

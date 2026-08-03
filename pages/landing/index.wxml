@@ -7,10 +7,6 @@
       </view>
       <view class="pu-avatar">鲜</view>
     </view>
-    <view class="pu-search" bindtap="goHome">
-      <text class="pu-search-icon">⌕</text>
-      <text class="pu-search-text">搜索食材、菜名、家常菜灵感</text>
-    </view>
   </view>
 
   <view class="pu-banner">
@@ -51,7 +47,7 @@
           <view class="pu-image-fallback-copy">{{item.title}}</view>
         </view>
         <view class="pu-grid-body">
-          <view class="pu-grid-title">{{item.emoji}} {{item.title}}</view>
+          <view class="pu-grid-title">{{item.title}}</view>
           <view class="pu-grid-sub">{{item.subtitle}}</view>
           <view class="pu-grid-cta">一键生成采购清单</view>
         </view>
@@ -86,7 +82,7 @@
           <view class="pu-image-fallback-copy">{{item.title}}</view>
         </view>
         <view class="pu-grid-body">
-          <view class="pu-grid-title">{{item.emoji}} {{item.title}}</view>
+          <view class="pu-grid-title">{{item.title}}</view>
           <view class="pu-grid-sub">{{item.subtitle}}</view>
         </view>
       </view>
@@ -120,7 +116,7 @@
           <view class="pu-image-fallback-copy">{{item.title}}</view>
         </view>
         <view class="pu-hot-body">
-          <view class="pu-hot-title">{{item.emoji}} {{item.title}}</view>
+          <view class="pu-hot-title">{{item.title}}</view>
           <view class="pu-hot-sub">{{item.subtitle}}</view>
         </view>
       </view>
@@ -134,7 +130,7 @@
         <view class="step-index">1</view>
         <view class="step-copy">
           <view class="step-title">先挑今晚想做的菜</view>
-          <view class="muted">真实图片 + 搜索 + 分类，选菜速度更快。</view>
+          <view class="muted">真实图片 + 分类浏览，选菜速度更快。</view>
         </view>
       </view>
       <view class="step-item">

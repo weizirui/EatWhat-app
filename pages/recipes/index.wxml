@@ -14,7 +14,7 @@
     </view>
     <view class="row-between">
       <view>
-        <view class="recipe-name">{{item.emoji}} {{item.title}}</view>
+        <view class="recipe-name">{{item.title}}</view>
         <view class="recipe-meta">{{item.category}} · {{item.minutes}} 分钟 · {{item.difficulty}}</view>
       </view>
       <button

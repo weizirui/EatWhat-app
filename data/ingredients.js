@@ -56,6 +56,10 @@ const INGREDIENTS = [
   { id: "ribs", name: "排骨", category_id: "meat", emoji: "🍖", tags: [] },
   { id: "lamb", name: "羊肉", category_id: "meat", emoji: "🐑", tags: [] },
   { id: "duck_breast", name: "鸭肉", category_id: "meat", emoji: "🦆", tags: [] },
+  { id: "pork_liver", name: "猪肝", category_id: "meat", emoji: "🥩", tags: [] },
+  { id: "duck_blood", name: "鸭血", category_id: "meat", emoji: "🟥", tags: [] },
+  { id: "pork_trotter", name: "猪脚", category_id: "meat", emoji: "🍖", tags: [] },
+  { id: "wonton", name: "扁食", category_id: "meat", emoji: "🥟", tags: ["厦门"] },
 
   // —— 海鲜（9 种）——
   { id: "shrimp", name: "基围虾", category_id: "seafood", emoji: "🦐", tags: [] },
@@ -67,6 +71,20 @@ const INGREDIENTS = [
   { id: "yellow_croaker", name: "黄鱼", category_id: "seafood", emoji: "🐟", tags: [] },
   { id: "crucian_carp", name: "鲫鱼", category_id: "seafood", emoji: "🐟", tags: [] },
   { id: "crab", name: "螃蟹", category_id: "seafood", emoji: "🦀", tags: [] },
+  { id: "oyster", name: "海蛎", category_id: "seafood", emoji: "🦪", tags: ["厦门"] },
+  { id: "razor_clam", name: "蛏子", category_id: "seafood", emoji: "🦪", tags: ["厦门"] },
+  { id: "pomfret", name: "鲳鱼", category_id: "seafood", emoji: "🐟", tags: ["海鱼"] },
+  { id: "mackerel", name: "巴浪鱼", category_id: "seafood", emoji: "🐟", tags: ["厦门"] },
+  { id: "threadfin_fish", name: "午鱼", category_id: "seafood", emoji: "🐟", tags: ["厦门", "海鱼"] },
+  { id: "yellowfin_seabream", name: "黄翅鱼", category_id: "seafood", emoji: "🐟", tags: ["厦门", "海鱼"] },
+  { id: "mixed_sea_fish", name: "杂鱼", category_id: "seafood", emoji: "🐟", tags: ["厦门", "海鱼"] },
+  { id: "grouper", name: "石斑鱼", category_id: "seafood", emoji: "🐟", tags: ["海鱼"] },
+  { id: "spanish_mackerel", name: "马鲛鱼", category_id: "seafood", emoji: "🐟", tags: ["厦门", "海鱼"] },
+  { id: "octopus", name: "章鱼", category_id: "seafood", emoji: "🐙", tags: ["厦门"] },
+  { id: "dried_shrimp", name: "虾皮", category_id: "seafood", emoji: "🦐", tags: ["干货"] },
+  { id: "fish_ball", name: "鱼丸", category_id: "seafood", emoji: "🍡", tags: ["厦门"] },
+  { id: "baby_squid", name: "小管", category_id: "seafood", emoji: "🦑", tags: ["厦门"] },
+  { id: "dried_oyster", name: "海蛎干", category_id: "seafood", emoji: "🦪", tags: ["干货"] },
 
   // —— 豆制品（4 种）——
   { id: "tofu", name: "嫩豆腐", category_id: "tofu", emoji: "🧊", tags: [] },

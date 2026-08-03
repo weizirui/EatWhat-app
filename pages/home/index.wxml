@@ -103,7 +103,7 @@
             <view class="cart-image-fallback-emoji">{{item.emoji}}</view>
           </view>
           <view class="cart-item-copy">
-            <view class="cart-item-name">{{item.emoji}} {{item.title}}</view>
+            <view class="cart-item-name">{{item.title}}</view>
             <view class="cart-item-meta">{{item.metaText}}</view>
           </view>
           <text class="cart-item-remove" data-id="{{item.id}}" bindtap="removeSelected">移除</text>

@@ -39,27 +39,6 @@
   font-weight: 700;
 }
 
-.pu-search {
-  margin-top: 24rpx;
-  height: 80rpx;
-  border-radius: 999rpx;
-  background: rgba(255, 255, 255, 0.16);
-  display: flex;
-  align-items: center;
-  padding: 0 24rpx;
-  box-sizing: border-box;
-}
-
-.pu-search-icon {
-  color: #ffffff;
-  margin-right: 14rpx;
-}
-
-.pu-search-text {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 26rpx;
-}
-
 .pu-banner {
   margin-top: -72rpx;
   background: #ffffff;
