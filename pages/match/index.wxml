@@ -1,4 +1,5 @@
 <view class="page match-page">
+  <view wx:if="{{isShared}}" class="share-banner">这是朋友分享的采购清单，可查看但不能提交。</view>
   <view class="card match-hero-card">
     <view class="section-title">已选菜谱</view>
     <view class="title">已经帮你汇总好需要采购的主食材</view>
@@ -55,7 +56,7 @@
     <view class="subtitle">先回上一页挑几道菜，再来生成采购清单。</view>
   </view>
 
-  <view class="section receiver-section" wx:if="{{recipeCount}}">
+  <view class="section receiver-section" wx:if="{{recipeCount && !isShared}}">
     <view class="section-title">这份清单交给谁</view>
     <view class="subtitle">每份清单只指定一位负责人，避免重复采购。</view>
     <view class="receiver-state" wx:if="{{collaboratorsLoading}}">协作人加载中...</view>
@@ -172,8 +173,9 @@
     >
       菜谱详情（{{recipeCount}}）
     </button>
-    <button class="match-fab-kf" open-type="contact">联系客服</button>
-    <button class="btn-primary match-fab-submit" bindtap="submitOrder" disabled="{{submitting}}" loading="{{submitting}}">
+    <button class="match-fab-share" open-type="share" disabled="{{!recipeCount}}">分享清单</button>
+    <button wx:if="{{!isShared}}" class="match-fab-kf" open-type="contact">联系客服</button>
+    <button wx:if="{{!isShared}}" class="btn-primary match-fab-submit" bindtap="submitOrder" disabled="{{submitting}}" loading="{{submitting}}">
       {{submitting ? '提交中...' : '提交清单'}}
     </button>
   </view>

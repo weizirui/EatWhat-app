@@ -34,6 +34,16 @@
   <view class="section">
     <view class="row-between settings-section-head">
       <view>
+        <view class="section-title">本周菜单</view>
+        <view class="section-subtitle">自动荤素搭配，一周不重样，可一键加入采购清单。</view>
+      </view>
+    </view>
+    <button class="btn-secondary" bindtap="goPlan">查看本周菜单</button>
+  </view>
+
+  <view class="section">
+    <view class="row-between settings-section-head">
+      <view>
         <view class="section-title">协作人管理</view>
         <view class="section-subtitle">邀请码绑定、多对多协作、默认采购人都在这里处理。</view>
       </view>

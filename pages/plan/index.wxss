@@ -1,0 +1,99 @@
+.plan-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  box-sizing: border-box;
+}
+
+.plan-hero-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #183426;
+}
+
+.plan-hero-sub {
+  margin-top: 12rpx;
+  color: #6f8276;
+  font-size: 26rpx;
+  line-height: 1.7;
+}
+
+.plan-state {
+  padding: 40rpx 0;
+  text-align: center;
+  color: #7a887f;
+  font-size: 26rpx;
+}
+
+.plan-day-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.plan-day-weekday {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #183426;
+}
+
+.plan-day-date {
+  margin-top: 6rpx;
+  font-size: 24rpx;
+  color: #7a887f;
+}
+
+.plan-day-summary {
+  font-size: 24rpx;
+  color: #23a356;
+}
+
+.plan-recipe-list {
+  margin-top: 20rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+}
+
+.plan-recipe-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.plan-recipe-emoji {
+  font-size: 32rpx;
+}
+
+.plan-recipe-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #2f4a3a;
+  flex: 1;
+}
+
+.plan-recipe-meta {
+  font-size: 22rpx;
+  color: #8a978e;
+}
+
+.plan-add-btn {
+  margin-top: 20rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  border-radius: 999rpx;
+  background: #23a356;
+  color: #ffffff;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.plan-add-btn::after {
+  border: none;
+}

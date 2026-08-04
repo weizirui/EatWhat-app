@@ -403,6 +403,35 @@
   padding: 0;
 }
 
+.share-banner {
+  padding: 20rpx 24rpx;
+  border-radius: 20rpx;
+  background: #eef7f0;
+  color: #2f8f4a;
+  font-size: 26rpx;
+  line-height: 1.5;
+  margin-bottom: 20rpx;
+}
+
+.match-fab-share {
+  flex: 0 0 170rpx;
+  height: 92rpx;
+  border-radius: 22rpx;
+  background: #fff4e0;
+  color: #f5a623;
+  border: 2rpx solid rgba(245, 166, 35, 0.24);
+  font-size: 26rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.match-fab-share::after {
+  border: none;
+}
+
 .picked-mask {
   position: fixed;
   left: 0;

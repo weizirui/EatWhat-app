@@ -23,6 +23,8 @@ Page({
     orderId: "",
     source: "submit",
     order: null,
+    sharedRecipeIds: [],
+    isShared: false,
     recipes: [],
     ownedIngredientsText: "",
     suggestedIngredientsText: "",
@@ -40,9 +42,13 @@ Page({
    */
   onLoad(options) {
     const source = options && options.source ? options.source : "submit";
+    const raw = options && options.recipeIds ? decodeURIComponent(options.recipeIds) : "";
+    const sharedRecipeIds = raw ? raw.split(",").filter(Boolean) : [];
     this.setData({
       orderId: options && options.id ? options.id : "",
       source,
+      sharedRecipeIds,
+      isShared: sharedRecipeIds.length > 0,
     });
     wx.setNavigationBarTitle({
       title: source === "settings" ? "订单详情" : "提交成功",
@@ -53,7 +59,10 @@ Page({
     const order = this.data.orderId
       ? store.getOrderById(this.data.orderId)
       : store.getLastOrder();
-    const recipes = order ? getRecipesByIds(order.recipe_ids) : [];
+    const sharedIds = this.data.sharedRecipeIds || [];
+    const recipes = order
+      ? getRecipesByIds(order.recipe_ids)
+      : getRecipesByIds(sharedIds);
     const ownedIngredientsText = order
       ? getIngredientsByIds(order.owned_ingredient_ids || order.ingredient_ids || [])
           .map((item) => `${item.emoji} ${item.name}`)
@@ -89,13 +98,29 @@ Page({
     });
   },
 
+  onShareAppMessage() {
+    const recipeIds = this.data.recipes.map((item) => item.id);
+    const sharedIds = this.data.sharedRecipeIds || [];
+    const allIds = Array.from(new Set(sharedIds.concat(recipeIds)));
+    const queryParts = [`recipeIds=${encodeURIComponent(allIds.join(","))}`];
+    if (this.data.order && this.data.order.id) {
+      queryParts.unshift(`id=${encodeURIComponent(this.data.order.id)}`);
+    }
+    return {
+      title: this.data.order && this.data.order.id
+        ? `订单 ${this.data.order.id} 的采购清单`
+        : "分享订单清单",
+      path: `/pages/checkout-success/index?${queryParts.join("&")}`,
+    };
+  },
+
   /**
    * 重试发送当前订单的协作采购清单。
    * @returns {Promise<void>} 发送结果和订单状态更新完成。
    */
   async retryCollaboration() {
     const order = this.data.order;
-    if (!order || !order.receiver_openid || this.data.retryingCollaboration) {
+    if (!order || this.data.isShared || !order.receiver_openid || this.data.retryingCollaboration) {
       return;
     }
     this.setData({ retryingCollaboration: true });
@@ -147,9 +172,12 @@ Page({
    * @returns {void}
    */
   goRecipes() {
-    const query = this.data.order && this.data.order.id
-      ? `?orderId=${encodeURIComponent(this.data.order.id)}`
-      : "";
+    let query = "";
+    if (this.data.order && this.data.order.id) {
+      query = `?orderId=${encodeURIComponent(this.data.order.id)}`;
+    } else if (this.data.recipes.length) {
+      query = `?recipeIds=${encodeURIComponent(this.data.recipes.map((item) => item.id).join(","))}`;
+    }
     wx.navigateTo({
       url: `/pages/recipes/index${query}`,
     });

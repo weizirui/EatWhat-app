@@ -25,6 +25,7 @@ function serializeRecipe(recipe, ownedIds) {
     hasImage: canUseDirectly,
     imageFailed: false,
     open: false,
+    favorited: store.isFavoriteRecipe(recipe.id),
     caloriesText: profile.caloriesText,
     proteinText: profile.proteinText,
     nutritionCards: profile.nutritionCards,
@@ -46,35 +47,54 @@ function serializeRecipe(recipe, ownedIds) {
 Page({
   data: {
     orderId: "",
+    recipeIds: [],
+    sharedSource: false,
     recipes: [],
   },
 
   /**
-   * 保存来源订单 ID，历史订单可读取自己的菜谱。
+   * 保存来源订单 ID 和分享传入的菜谱 ID 列表。
    * @param {object} options 页面路由参数。
    * @returns {void}
    */
   onLoad(options) {
+    const rawRecipeIds = options && options.recipeIds
+      ? decodeURIComponent(options.recipeIds)
+      : "";
+    const recipeIds = rawRecipeIds
+      ? rawRecipeIds.split(",").filter(Boolean)
+      : [];
     this.setData({
       orderId: options && options.orderId ? decodeURIComponent(options.orderId) : "",
+      recipeIds,
+      sharedSource: recipeIds.length > 0,
     });
   },
 
   /**
-   * 加载指定订单；无指定订单时沿用最近提交记录。
+   * 加载指定订单；无指定订单时沿用最近提交记录或分享传入的菜谱。
    * @returns {void}
    */
   onShow() {
-    const order = this.data.orderId
+    const sharedIds = this.data.recipeIds || [];
+    const order = !sharedIds.length && this.data.orderId
       ? store.getOrderById(this.data.orderId)
-      : store.getLastOrder();
-    const pickedIds = order
-      ? (order.recipe_ids || [])
-      : store.getPickedRecipes();
+      : null;
+    const pickedIds = sharedIds.length
+      ? sharedIds
+      : order
+        ? (order.recipe_ids || [])
+        : store.getPickedRecipes();
+    const effectiveIds = pickedIds.length
+      ? pickedIds
+      : (() => {
+          const lastOrder = store.getLastOrder();
+          return lastOrder ? (lastOrder.recipe_ids || []) : [];
+        })();
     const ownedIds = order
       ? (order.all_ingredient_ids || order.owned_ingredient_ids || order.ingredient_ids || [])
       : store.getAllIngredientIds();
-    const recipes = getRecipesByIds(pickedIds).map((item) =>
+    const recipes = getRecipesByIds(effectiveIds).map((item) =>
       serializeRecipe(item, ownedIds),
     );
 
@@ -87,6 +107,22 @@ Page({
         recipes: nextRecipes,
       });
     });
+  },
+
+  onShareAppMessage() {
+    const recipeIds = this.data.recipes.map((item) => item.id);
+    const sharedIds = this.data.recipeIds || [];
+    const allIds = Array.from(new Set(sharedIds.concat(recipeIds)));
+    const title = recipeIds.length
+      ? `${recipeIds.map((id) => {
+          const recipe = getRecipesByIds([id])[0];
+          return recipe ? recipe.title : "";
+        }).filter(Boolean).join("、")} 的做法`
+      : "来看看这些菜的做法";
+    return {
+      title,
+      path: `/pages/recipes/index?recipeIds=${encodeURIComponent(allIds.join(","))}`,
+    };
   },
 
   toggleRecipeDetail(event) {
@@ -104,6 +140,29 @@ Page({
     });
     this.setData({
       recipes: next,
+    });
+  },
+
+  toggleFavorite(event) {
+    const { id } = event.currentTarget.dataset;
+    if (!id) {
+      return;
+    }
+    store.toggleFavoriteRecipe(id);
+    const next = this.data.recipes.map((item) => {
+      if (item.id !== id) {
+        return item;
+      }
+      return Object.assign({}, item, {
+        favorited: !item.favorited,
+      });
+    });
+    this.setData({
+      recipes: next,
+    });
+    wx.showToast({
+      title: next.find((item) => item.id === id).favorited ? "已收藏" : "已取消收藏",
+      icon: "none",
     });
   },
 

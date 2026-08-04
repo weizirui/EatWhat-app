@@ -61,6 +61,12 @@
   font-size: 24rpx;
 }
 
+.market-hero-links {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
 .category-scroll {
   width: 100%;
   margin-top: 16rpx;

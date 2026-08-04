@@ -76,6 +76,22 @@ Page({
     collaboratorsError: "",
     selectedReceiverOpenid: "",
     selectedReceiverName: "仅自己保存",
+    sharedRecipeIds: [],
+    isShared: false,
+  },
+
+  /**
+   * 记录分享进入的菜谱 ID，进入只读展示模式。
+   * @param {object} options 页面路由参数。
+   * @returns {void}
+   */
+  onLoad(options) {
+    const raw = options && options.recipeIds ? decodeURIComponent(options.recipeIds) : "";
+    const sharedRecipeIds = raw ? raw.split(",").filter(Boolean) : [];
+    this.setData({
+      sharedRecipeIds,
+      isShared: sharedRecipeIds.length > 0,
+    });
   },
 
   /**
@@ -84,7 +100,26 @@ Page({
    */
   onShow() {
     this.refresh();
-    this.loadCollaborators();
+    if (!this.data.isShared) {
+      this.loadCollaborators();
+    }
+  },
+
+  /**
+   * 分享当前采购清单，带已选菜谱 ID。
+   * @returns {object} 分享参数。
+   */
+  onShareAppMessage() {
+    const recipeIds = this.data.selectedRecipes.map((item) => item.id);
+    const ingredientText = this.data.purchaseIngredients
+      .map((item) => `${item.emoji}${item.name}${item.countText}`)
+      .join("、");
+    return {
+      title: this.data.selectedRecipesText
+        ? `今晚吃：${this.data.selectedRecipesText}`
+        : "分享采购清单",
+      path: `/pages/match/index?recipeIds=${encodeURIComponent(recipeIds.join(","))}`,
+    };
   },
 
   /**
@@ -151,7 +186,9 @@ Page({
   },
 
   refresh() {
-    const selectedRecipeIds = store.getPickedRecipes();
+    const selectedRecipeIds = this.data.isShared
+      ? this.data.sharedRecipeIds
+      : store.getPickedRecipes();
     const plan = buildMenuPlan(selectedRecipeIds);
     const selectedRecipes = plan.recipes.map(serializeRecipe);
     const purchaseIngredients = plan.ingredients.map(serializeIngredient);
@@ -187,7 +224,11 @@ Page({
       pickedPanelClass: pickedPanelOpen ? "picked-sheet picked-sheet-open" : "picked-sheet",
     });
 
-    this.loadRemoteIngredients(selectedRecipeIds);
+    if (!this.data.isShared) {
+      this.loadRemoteIngredients(selectedRecipeIds);
+    } else {
+      this.setData({ collaborators: [], collaboratorsLoading: false });
+    }
   },
 
   /**
@@ -270,6 +311,13 @@ Page({
    */
   async submitOrder() {
     if (this.data.submitting) {
+      return;
+    }
+    if (this.data.isShared) {
+      wx.showToast({
+        title: "这是分享的清单，只能查看",
+        icon: "none",
+      });
       return;
     }
     const selectedRecipeIds = store.getPickedRecipes();

@@ -123,6 +123,65 @@
     </view>
   </view>
 
+  <view class="section pu-section" wx:if="{{smartSuggestion}}">
+    <view class="row-between">
+      <view class="section-title">帮你补一道</view>
+      <text class="muted">{{smartSuggestion.hint}}</text>
+    </view>
+    <view class="pu-smart-card" data-id="{{smartSuggestion.id}}" bindtap="pickSmart">
+      <image
+        wx:if="{{smartSuggestion.hasImage && !smartSuggestion.imageFailed}}"
+        class="pu-smart-image"
+        src="{{smartSuggestion.image}}"
+        mode="aspectFit"
+        data-id="{{smartSuggestion.id}}"
+        binderror="handleSmartImageError"
+      />
+      <view wx:else class="pu-smart-image pu-image-fallback">
+        <view class="pu-image-fallback-emoji">{{smartSuggestion.emoji}}</view>
+      </view>
+      <view class="pu-smart-body">
+        <view class="pu-smart-title">{{smartSuggestion.title}}</view>
+        <view class="pu-smart-sub">{{smartSuggestion.subtitle}}</view>
+        <view class="pu-grid-cta">加入采购清单</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="section pu-section" wx:if="{{frequentRecipes.length}}">
+    <view class="row-between">
+      <view class="section-title">常吃菜</view>
+      <text class="muted">家里常做的，一键再加</text>
+    </view>
+    <view class="pu-grid-list">
+      <view
+        wx:for="{{frequentRecipes}}"
+        wx:key="id"
+        class="pu-grid-card pu-season-card"
+        data-id="{{item.id}}"
+        bindtap="pickFrequent"
+      >
+        <image
+          wx:if="{{item.hasImage && !item.imageFailed}}"
+          class="pu-grid-image"
+          src="{{item.image}}"
+          mode="aspectFit"
+          data-id="{{item.id}}"
+          binderror="handleFrequentImageError"
+        />
+        <view wx:else class="pu-grid-image pu-image-fallback">
+          <view class="pu-image-fallback-emoji">{{item.emoji}}</view>
+          <view class="pu-image-fallback-copy">{{item.title}}</view>
+        </view>
+        <view class="pu-grid-body">
+          <view class="pu-grid-title">{{item.title}}</view>
+          <view class="pu-grid-sub">{{item.subtitle}}</view>
+          <view class="pu-grid-cta">一键加入</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
   <view class="section pu-section">
     <view class="section-title">怎么使用</view>
     <view class="step-list">

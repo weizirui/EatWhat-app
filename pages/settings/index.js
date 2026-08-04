@@ -396,6 +396,16 @@ Page({
   },
 
   /**
+   * 进入本周菜单规划页。
+   * @returns {void}
+   */
+  goPlan() {
+    wx.navigateTo({
+      url: "/pages/plan/index",
+    });
+  },
+
+  /**
    * 清空本机保存的订单记录。
    * @returns {void}
    */
