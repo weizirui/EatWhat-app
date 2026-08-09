@@ -1,0 +1,31 @@
+<view class="page plan-page">
+  <view class="plan-hero card">
+    <view class="plan-hero-title">本周菜单</view>
+    <view class="plan-hero-sub">自动荤素搭配，一周不重样。点开某天可看菜谱，一键加入采购清单。</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="plan-state">周菜单生成中...</view>
+
+  <view wx:for="{{days}}" wx:key="index" class="plan-day card">
+    <view class="plan-day-head" data-index="{{index}}" bindtap="toggleDay">
+      <view>
+        <view class="plan-day-weekday">{{item.weekday}}</view>
+        <view class="plan-day-date">{{item.dateText}}</view>
+      </view>
+      <view class="plan-day-summary">{{item.recipes.length}} 道菜 · {{item.ingredientCount}} 项食材</view>
+    </view>
+
+    <view wx:if="{{item.open}}">
+      <view class="plan-recipe-list">
+        <view wx:for="{{item.recipes}}" wx:for-item="recipe" wx:key="id" class="plan-recipe-row">
+          <text class="plan-recipe-emoji">{{recipe.emoji}}</text>
+          <text class="plan-recipe-title">{{recipe.title}}</text>
+          <text class="plan-recipe-meta">{{recipe.category}} · {{recipe.minutes}} 分钟</text>
+        </view>
+      </view>
+      <button class="plan-add-btn" data-index="{{index}}" bindtap="addDayAndGo">
+        {{item.addAllText}}
+      </button>
+    </view>
+  </view>
+</view>

@@ -6,6 +6,7 @@
     "pages/match/index",
     "pages/checkout-success/index",
     "pages/recipes/index",
+    "pages/plan/index",
     "pages/tasks/index",
     "pages/image-admin/index"
   ],

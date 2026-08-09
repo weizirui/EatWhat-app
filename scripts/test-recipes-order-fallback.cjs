@@ -50,6 +50,12 @@ vm.runInNewContext(
           getSelectedIngredients() {
             return [];
           },
+          getAllIngredientIds() {
+            return [];
+          },
+          isFavoriteRecipe() {
+            return false;
+          },
         };
       }
       if (request === "../../utils/catalog") {
@@ -91,6 +97,13 @@ vm.runInNewContext(
               ingredientLines: [],
               baseSeasoningLines: [],
             };
+          },
+        };
+      }
+      if (request === "../../utils/ai-image") {
+        return {
+          generateRecipeImageIfMissing() {
+            return Promise.resolve({ image: "" });
           },
         };
       }

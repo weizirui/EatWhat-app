@@ -70,6 +70,7 @@ Page({
       }
     });
     const categories = Array.from(categoryMap.values());
+    categories.push({ id: "favorites", name: "收藏", emoji: "⭐", sort: categories.length });
     this.setData({
       activeCategory: categories[0] ? categories[0].id : "",
       activeCategoryIndex: 0,
@@ -84,6 +85,7 @@ Page({
 
   refresh() {
     const selectedRecipeIds = store.getPickedRecipes();
+    const favoriteIds = store.getFavoriteRecipes();
     const plan = buildMenuPlan(selectedRecipeIds);
     const activeCategory = this.data.activeCategory || (this.data.categories[0] && this.data.categories[0].id) || "";
     const searchQuery = normalizeKeyword(this.data.searchQuery);
@@ -92,12 +94,18 @@ Page({
       className: item.id === activeCategory ? "chip active" : "chip",
     }));
     const visibleRecipes = getVisibleRecipes();
+    const isFavorites = activeCategory === "favorites";
     const baseList = searchQuery
       ? visibleRecipes.filter((item) => {
           const text = `${item.title} ${item.category} ${(item.ingredient_ids || []).join(" ")} ${item.difficulty}`.toLowerCase();
-          return text.includes(searchQuery);
+          const matchesSearch = text.includes(searchQuery);
+          return isFavorites
+            ? matchesSearch && favoriteIds.includes(item.id)
+            : matchesSearch;
         })
-      : visibleRecipes.filter((item) => item.category === activeCategory);
+      : visibleRecipes.filter((item) =>
+          isFavorites ? favoriteIds.includes(item.id) : item.category === activeCategory,
+        );
 
     const recipes = baseList
       .slice()
@@ -269,6 +277,12 @@ Page({
   goSettings() {
     wx.navigateTo({
       url: "/pages/settings/index?source=manage",
+    });
+  },
+
+  goPlan() {
+    wx.navigateTo({
+      url: "/pages/plan/index",
     });
   },
 

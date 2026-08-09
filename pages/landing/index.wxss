@@ -251,3 +251,40 @@
   font-weight: 600;
   margin-bottom: 8rpx;
 }
+
+.pu-smart-card {
+  margin-top: 18rpx;
+  display: flex;
+  gap: 14rpx;
+  width: 100%;
+  border-radius: 28rpx;
+  padding: 16rpx;
+  box-sizing: border-box;
+  align-items: center;
+  background: #fff4e0;
+  border: 2rpx solid rgba(245, 166, 35, 0.18);
+}
+
+.pu-smart-image {
+  width: 160rpx;
+  height: 132rpx;
+  border-radius: 20rpx;
+  flex-shrink: 0;
+}
+
+.pu-smart-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.pu-smart-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #183426;
+}
+
+.pu-smart-sub {
+  margin-top: 10rpx;
+  color: #6f7f72;
+  font-size: 24rpx;
+}

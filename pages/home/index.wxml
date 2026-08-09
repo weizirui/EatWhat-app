@@ -5,7 +5,10 @@
         <view class="market-eyebrow">今日菜市</view>
         <view class="market-title">选菜谱，自动出食材</view>
       </view>
-      <text class="muted mini-link" bindtap="goSettings">设置</text>
+      <view class="market-hero-links">
+        <text class="muted mini-link" bindtap="goPlan">本周菜单</text>
+        <text class="muted mini-link" bindtap="goSettings">设置</text>
+      </view>
     </view>
     <view class="market-subtitle">已选 {{selectedRecipeCount}} 道菜，自动汇总 {{totalIngredientCount}} 项主食材，支持搜索、分类和真实图片浏览。</view>
     <view class="market-search">

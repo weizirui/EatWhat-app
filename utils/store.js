@@ -2,6 +2,7 @@ const STORAGE_KEYS = {
   selectedIngredients: "qx_selected_ingredients",
   suggestedPurchaseIngredients: "qx_suggested_purchase_ingredients",
   pickedRecipes: "qx_picked_recipes",
+  favoriteRecipes: "qx_favorite_recipes",
   settings: "qx_mini_settings",
   lastOrder: "qx_last_order",
   orders: "qx_orders",
@@ -109,8 +110,29 @@ function setPickedRecipes(ids) {
   return writeStorage(STORAGE_KEYS.pickedRecipes, unique(ids));
 }
 
+function addPickedRecipes(ids) {
+  const next = unique(getPickedRecipes().concat(ids || []));
+  return writeStorage(STORAGE_KEYS.pickedRecipes, next);
+}
+
 function clearPickedRecipes() {
   return writeStorage(STORAGE_KEYS.pickedRecipes, []);
+}
+
+function getFavoriteRecipes() {
+  return readStorage(STORAGE_KEYS.favoriteRecipes, []);
+}
+
+function isFavoriteRecipe(id) {
+  return getFavoriteRecipes().includes(id);
+}
+
+function toggleFavoriteRecipe(id) {
+  const favorites = getFavoriteRecipes();
+  const next = favorites.includes(id)
+    ? favorites.filter((item) => item !== id)
+    : favorites.concat(id);
+  return writeStorage(STORAGE_KEYS.favoriteRecipes, next);
 }
 
 function getSettings() {
@@ -186,7 +208,11 @@ module.exports = {
   getPickedRecipes,
   togglePickedRecipe,
   setPickedRecipes,
+  addPickedRecipes,
   clearPickedRecipes,
+  getFavoriteRecipes,
+  isFavoriteRecipe,
+  toggleFavoriteRecipe,
   getSettings,
   isSetupCompleted,
   updateSettings,

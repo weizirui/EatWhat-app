@@ -1,4 +1,5 @@
 <view class="page recipes-page" wx:if="{{recipes.length}}">
+  <view wx:if="{{sharedSource}}" class="share-banner">来自朋友分享的菜谱，可查看完整做法。</view>
   <view wx:for="{{recipes}}" wx:key="id" class="recipe-detail">
     <image
       wx:if="{{item.hasImage && !item.imageFailed}}"
@@ -17,13 +18,20 @@
         <view class="recipe-name">{{item.title}}</view>
         <view class="recipe-meta">{{item.category}} · {{item.minutes}} 分钟 · {{item.difficulty}}</view>
       </view>
-      <button
-        class="recipe-toggle"
-        data-id="{{item.id}}"
-        bindtap="toggleRecipeDetail"
-      >
-        {{item.open ? '收起' : '查看详情'}}
-      </button>
+      <view class="recipe-actions">
+        <text
+          class="{{item.favorited ? 'recipe-fav recipe-fav-active' : 'recipe-fav'}}"
+          data-id="{{item.id}}"
+          bindtap="toggleFavorite"
+        >{{item.favorited ? '★' : '☆'}}</text>
+        <button
+          class="recipe-toggle"
+          data-id="{{item.id}}"
+          bindtap="toggleRecipeDetail"
+        >
+          {{item.open ? '收起' : '查看详情'}}
+        </button>
+      </view>
     </view>
 
     <view wx:if="{{item.open}}">
@@ -109,6 +117,7 @@
       <view class="tip-box">小贴士：{{item.tip}}</view>
     </view>
   </view>
+  <button class="share-recipe-btn" open-type="share">分享菜谱</button>
 </view>
 
 <view class="page recipes-page" wx:else>

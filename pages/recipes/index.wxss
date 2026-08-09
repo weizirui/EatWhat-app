@@ -52,6 +52,28 @@
   color: #7a887f;
 }
 
+.recipe-actions {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.recipe-fav {
+  width: 64rpx;
+  height: 64rpx;
+  line-height: 64rpx;
+  text-align: center;
+  border-radius: 999rpx;
+  background: #fff8ee;
+  color: #b8a88a;
+  font-size: 36rpx;
+}
+
+.recipe-fav-active {
+  background: #fff4e0;
+  color: #f5a623;
+}
+
 .recipe-toggle {
   height: 64rpx;
   line-height: 64rpx;
@@ -66,6 +88,30 @@
 }
 
 .recipe-toggle::after {
+  border: none;
+}
+
+.share-banner {
+  padding: 20rpx 24rpx;
+  border-radius: 20rpx;
+  background: #eef7f0;
+  color: #2f8f4a;
+  font-size: 26rpx;
+  line-height: 1.5;
+}
+
+.share-recipe-btn {
+  height: 88rpx;
+  line-height: 88rpx;
+  border-radius: 999rpx;
+  background: #23a356;
+  color: #ffffff;
+  font-size: 30rpx;
+  font-weight: 700;
+  margin-top: 8rpx;
+}
+
+.share-recipe-btn::after {
   border: none;
 }
 
