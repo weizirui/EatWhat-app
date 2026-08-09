@@ -7,6 +7,12 @@
     <view class="subtitle" wx:if="{{!selectedRecipesText}}">还没有已选菜谱，请返回上一页重新选择。</view>
   </view>
 
+  <view class="setup-required-notice" wx:if="{{!setupCompleted}}" bindtap="goSetup">
+    <view class="setup-required-title">当前仅可浏览</view>
+    <view class="setup-required-copy">完成基础设置后才能提交采购清单。</view>
+    <view class="setup-required-action">去设置</view>
+  </view>
+
   <view class="stack" wx:if="{{recipeCount || ingredientCount}}">
     <view class="card match-summary-card">
       <view class="section-title">采购清单</view>
@@ -174,7 +180,7 @@
     </button>
     <button class="match-fab-kf" open-type="contact">联系客服</button>
     <button class="btn-primary match-fab-submit" bindtap="submitOrder" disabled="{{submitting}}" loading="{{submitting}}">
-      {{submitting ? '提交中...' : '提交清单'}}
+      {{submitting ? '提交中...' : (setupCompleted ? '提交清单' : '完成设置后提交')}}
     </button>
   </view>
 </view>

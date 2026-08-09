@@ -22,23 +22,25 @@
   </view>
 
   <view class="section">
-    <view class="row-between">
-      <view class="section-title">菜谱分类</view>
-      <text class="muted">{{resultHint}}</text>
-    </view>
-    <scroll-view class="category-scroll" scroll-x enhanced show-scrollbar="{{false}}">
-      <view class="category-row">
-        <view
-          wx:for="{{categories}}"
-          wx:key="id"
-          class="{{item.className}}"
-          data-id="{{item.id}}"
-          bindtap="setCategory"
-        >
-          {{item.emoji}} {{item.name}}
-        </view>
+    <view class="category-heading">
+      <view>
+        <view class="section-title">菜谱分类</view>
+        <view class="category-result">{{resultHint}}</view>
       </view>
-    </scroll-view>
+      <picker
+        class="category-picker-wrap"
+        mode="selector"
+        range="{{categories}}"
+        range-key="name"
+        value="{{activeCategoryIndex}}"
+        bindchange="changeCategory"
+      >
+        <view class="category-picker">
+          <text class="category-picker-value">{{activeCategoryName}}</text>
+          <text class="category-picker-arrow">⌄</text>
+        </view>
+      </picker>
+    </view>
   </view>
 
   <view class="ingredient-grid">
@@ -53,7 +55,7 @@
         wx:if="{{item.hasImage && !item.imageFailed}}"
         class="ingredient-image"
         src="{{item.image}}"
-        mode="aspectFit"
+        mode="aspectFill"
         data-id="{{item.id}}"
         binderror="handleIngredientImageError"
       />
@@ -95,7 +97,7 @@
             wx:if="{{item.hasImage && !item.imageFailed}}"
             class="cart-item-image"
             src="{{item.image}}"
-            mode="aspectFit"
+            mode="aspectFill"
             data-id="{{item.id}}"
             binderror="handleOwnedImageError"
           />
@@ -117,7 +119,7 @@
             wx:if="{{item.hasImage && !item.imageFailed}}"
             class="cart-item-image cart-ingredient-image"
             src="{{item.image}}"
-            mode="aspectFit"
+            mode="aspectFill"
             data-id="{{item.id}}"
             binderror="handleSuggestedImageError"
           />

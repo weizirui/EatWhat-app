@@ -71,6 +71,7 @@ Page({
     activePickedId: "",
     activePickedDetail: null,
     submitting: false,
+    setupCompleted: false,
     collaborators: [],
     collaboratorsLoading: false,
     collaboratorsError: "",
@@ -83,8 +84,20 @@ Page({
    * @returns {void}
    */
   onShow() {
+    const setupCompleted = store.isSetupCompleted();
+    this.setData({ setupCompleted });
     this.refresh();
-    this.loadCollaborators();
+    if (setupCompleted) {
+      this.loadCollaborators();
+    } else {
+      this.setData({
+        collaborators: [],
+        collaboratorsLoading: false,
+        collaboratorsError: "",
+        selectedReceiverOpenid: "",
+        selectedReceiverName: "仅自己保存",
+      });
+    }
   },
 
   /**
@@ -272,6 +285,22 @@ Page({
     if (this.data.submitting) {
       return;
     }
+    if (!store.isSetupCompleted()) {
+      wx.showModal({
+        title: "完成设置后才能提交",
+        content: "当前可以继续浏览菜品和采购清单，完成基础设置后才能提交。",
+        confirmText: "去设置",
+        cancelText: "继续浏览",
+        success(result) {
+          if (result.confirm) {
+            wx.navigateTo({
+              url: "/pages/settings/index?source=setup&return=match",
+            });
+          }
+        },
+      });
+      return;
+    }
     const selectedRecipeIds = store.getPickedRecipes();
     if (!selectedRecipeIds.length) {
       wx.showToast({
@@ -345,6 +374,12 @@ Page({
   goRecipes() {
     wx.navigateTo({
       url: "/pages/recipes/index",
+    });
+  },
+
+  goSetup() {
+    wx.navigateTo({
+      url: "/pages/settings/index?source=setup&return=match",
     });
   },
 

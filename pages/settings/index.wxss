@@ -4,6 +4,177 @@
   gap: 24rpx;
 }
 
+.setup-panel {
+  min-height: calc(100vh - 72rpx);
+  padding: 72rpx 32rpx 40rpx;
+  border-radius: 24rpx;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.setup-kicker {
+  color: #23a356;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.setup-title {
+  margin-top: 14rpx;
+  color: #183426;
+  font-size: 46rpx;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.setup-copy {
+  margin-top: 16rpx;
+  color: #6f7d72;
+  font-size: 26rpx;
+  line-height: 1.7;
+}
+
+.setup-form {
+  margin-top: 48rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 28rpx;
+}
+
+.setup-step-title {
+  color: #183426;
+  font-size: 28rpx;
+  font-weight: 800;
+}
+
+.setup-step-copy {
+  margin-top: 8rpx;
+  color: #738078;
+  font-size: 23rpx;
+  line-height: 1.6;
+}
+
+.setup-collab {
+  margin-top: 42rpx;
+  padding-top: 32rpx;
+  border-top: 2rpx solid rgba(47, 74, 58, 0.08);
+}
+
+.setup-collab-block {
+  margin-top: 28rpx;
+}
+
+.setup-panel .collab-invite-row {
+  align-items: stretch;
+}
+
+.collab-action[disabled] {
+  border-color: rgba(47, 74, 58, 0.08);
+  background: #f7f7f5;
+  color: #a9b0ab;
+  opacity: 1;
+}
+
+.setup-panel .collab-empty {
+  min-height: 88rpx;
+  padding: 18rpx 24rpx;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  font-size: 24rpx;
+}
+
+.setup-receiver-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.setup-receiver-row {
+  min-height: 96rpx;
+  padding: 14rpx 14rpx 14rpx 20rpx;
+  border: 2rpx solid rgba(47, 74, 58, 0.08);
+  border-radius: 16rpx;
+  background: #fbfdfb;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  box-sizing: border-box;
+}
+
+.setup-receiver-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.setup-receiver-name {
+  color: #183426;
+  font-size: 26rpx;
+  font-weight: 700;
+}
+
+.setup-receiver-state {
+  margin-top: 6rpx;
+  color: #7b8980;
+  font-size: 21rpx;
+}
+
+.setup-receiver-btn {
+  width: 132rpx;
+  height: 62rpx;
+  margin: 0;
+  padding: 0;
+  border: 2rpx solid rgba(35, 163, 86, 0.18);
+  border-radius: 14rpx;
+  background: #f2faf4;
+  color: #21894b;
+  font-size: 23rpx;
+  line-height: 60rpx;
+  flex-shrink: 0;
+}
+
+.setup-receiver-btn-active {
+  background: #23a356;
+  color: #ffffff;
+}
+
+.setup-receiver-btn::after {
+  border: 0;
+}
+
+.setup-notice {
+  margin-top: 28rpx;
+  padding: 18rpx 20rpx;
+  border-left: 6rpx solid #e3a03f;
+  background: #fff9ef;
+  color: #735b36;
+  font-size: 23rpx;
+  line-height: 1.6;
+}
+
+.setup-primary {
+  width: 100%;
+  margin-top: 32rpx;
+}
+
+.setup-skip {
+  width: 100%;
+  height: 84rpx;
+  margin-top: 14rpx;
+  border: 0;
+  background: transparent;
+  color: #607168;
+  font-size: 25rpx;
+  line-height: 84rpx;
+}
+
+.setup-skip::after {
+  border: 0;
+}
+
+.basic-settings-form {
+  margin-top: 24rpx;
+}
+
 .settings-section-head {
   align-items: flex-start;
   gap: 18rpx;
@@ -115,10 +286,15 @@
 .invite-code-box {
   font-family: monospace;
   letter-spacing: 2rpx;
+  display: flex;
+  align-items: center;
 }
 
 .collab-action {
   flex: 0 0 220rpx;
+  height: 88rpx;
+  border-radius: 20rpx;
+  font-size: 26rpx;
 }
 
 .collab-empty {

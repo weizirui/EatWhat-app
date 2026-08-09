@@ -38,6 +38,7 @@ const store = loadCommonJsModule(path.join(root, "utils/store.js"), { wx });
 
 assert.equal(store.getSettings().defaultReceiverOpenid, "");
 assert.equal(store.getSettings().collabDisplayName, "");
+assert.equal(store.isSetupCompleted(), false);
 
 store.updateSettings({
   defaultReceiverOpenid: "user-b",
@@ -46,5 +47,6 @@ store.updateSettings({
 
 assert.equal(store.getSettings().defaultReceiverOpenid, "user-b");
 assert.equal(store.getSettings().collabDisplayName, "小王");
+assert.equal(store.isSetupCompleted(), true);
 
 console.log("collaboration store tests passed");

@@ -8,6 +8,7 @@ const STORAGE_KEYS = {
 };
 
 const DEFAULT_SETTINGS = {
+  setupCompleted: false,
   contactName: "",
   defaultRemark: "",
   mealTimeOffset: 30,
@@ -123,6 +124,16 @@ function updateSettings(patch) {
   );
 }
 
+function isSetupCompleted(settings) {
+  const current = settings || getSettings();
+  const hasIdentity = Boolean(
+    current.setupCompleted
+    || String(current.contactName || "").trim()
+    || String(current.collabDisplayName || "").trim()
+  );
+  return hasIdentity && Boolean(String(current.defaultReceiverOpenid || "").trim());
+}
+
 function resetSettings() {
   return writeStorage(STORAGE_KEYS.settings, DEFAULT_SETTINGS);
 }
@@ -177,6 +188,7 @@ module.exports = {
   setPickedRecipes,
   clearPickedRecipes,
   getSettings,
+  isSetupCompleted,
   updateSettings,
   resetSettings,
   getLastOrder,

@@ -9,7 +9,7 @@ const store = require("../../utils/store");
 const { generateRecipeImageIfMissing } = require("../../utils/ai-image");
 const {
   buildLandingSections,
-  getRecommendationDayKey,
+  getRecommendationWeekKey,
 } = require("../../utils/landing-recommend");
 
 function withImages(list) {
@@ -42,11 +42,10 @@ function markFailed(list, id) {
 
 Page({
   data: {
-    season: {},
-    seasonalRecipes: [],
+    plan: {},
+    fatLossRecipes: [],
     soupRecipes: [],
-    hotRecipes: [],
-    recommendationDayKey: "",
+    recommendationWeekKey: "",
   },
 
   onLoad() {
@@ -55,38 +54,34 @@ Page({
 
   onShow() {
     const currentDate = new Date();
-    if (this.data.recommendationDayKey !== getRecommendationDayKey(currentDate)) {
+    if (this.data.recommendationWeekKey !== getRecommendationWeekKey(currentDate)) {
       this.refreshRecommendations(currentDate);
     }
   },
 
   refreshRecommendations(date) {
-    const landingSections = buildLandingSections(RECIPES, date);
-    const seasonalRecipes = withImages(landingSections.seasonalRecipes);
+    const landingSections = buildLandingSections(
+      RECIPES.filter((item) => item.id !== "chicken-soup"),
+      date,
+    );
+    const fatLossRecipes = withImages(landingSections.fatLossRecipes);
     const soupRecipes = withImages(landingSections.soupRecipes);
-    const hotRecipes = withImages(landingSections.hotRecipes);
 
     this.setData({
-      season: landingSections.season,
-      seasonalRecipes,
+      plan: landingSections.plan,
+      fatLossRecipes,
       soupRecipes,
-      hotRecipes,
-      recommendationDayKey: landingSections.dayKey,
+      recommendationWeekKey: landingSections.weekKey,
     });
 
-    hydrateImageList(seasonalRecipes).then((nextList) => {
+    hydrateImageList(fatLossRecipes).then((nextList) => {
       this.setData({
-        seasonalRecipes: nextList,
+        fatLossRecipes: nextList,
       });
     });
     hydrateImageList(soupRecipes).then((nextList) => {
       this.setData({
         soupRecipes: nextList,
-      });
-    });
-    hydrateImageList(hotRecipes).then((nextList) => {
-      this.setData({
-        hotRecipes: nextList,
       });
     });
   },
@@ -99,7 +94,7 @@ Page({
 
   goSettings() {
     wx.navigateTo({
-      url: "/pages/settings/index",
+      url: "/pages/settings/index?source=manage",
     });
   },
 
@@ -155,12 +150,12 @@ Page({
     }
   },
 
-  handleSeasonalImageError(event) {
+  handleFatLossImageError(event) {
     const id = event.currentTarget.dataset.id;
     this.setData({
-      seasonalRecipes: markFailed(this.data.seasonalRecipes, id),
+      fatLossRecipes: markFailed(this.data.fatLossRecipes, id),
     });
-    this.generateRecipeImageForList("seasonalRecipes", id);
+    this.generateRecipeImageForList("fatLossRecipes", id);
   },
 
   handleSoupImageError(event) {
@@ -171,11 +166,4 @@ Page({
     this.generateRecipeImageForList("soupRecipes", id);
   },
 
-  handleHotImageError(event) {
-    const id = event.currentTarget.dataset.id;
-    this.setData({
-      hotRecipes: markFailed(this.data.hotRecipes, id),
-    });
-    this.generateRecipeImageForList("hotRecipes", id);
-  },
 });

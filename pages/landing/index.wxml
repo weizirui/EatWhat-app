@@ -2,8 +2,8 @@
   <view class="pu-header">
     <view class="pu-top row-between">
       <view>
-        <view class="pu-location">轻享点餐 · 今晚吃啥</view>
-        <view class="pu-location-sub">先看推荐菜，再自动生成采购清单</view>
+        <view class="pu-location">今天吃什么 · 轻松选菜</view>
+        <view class="pu-location-sub">一日三餐随心选，采购清单自动整理</view>
       </view>
       <view class="pu-avatar">鲜</view>
     </view>
@@ -11,9 +11,9 @@
 
   <view class="pu-banner">
     <view class="pu-banner-copy">
-        <view class="pu-badge">今日主推</view>
-        <view class="pu-banner-title">{{season.headline}}</view>
-        <view class="pu-banner-text">{{season.description}}</view>
+        <view class="pu-badge">本周计划</view>
+        <view class="pu-banner-title">{{plan.headline}}</view>
+        <view class="pu-banner-text">{{plan.description}}</view>
         <view class="pu-banner-actions">
         <button class="btn-primary pu-banner-btn" bindtap="goHome">去选菜谱</button>
         </view>
@@ -22,12 +22,12 @@
 
   <view class="section pu-section">
     <view class="row-between">
-      <view class="section-title">{{season.title}}</view>
-      <text class="muted">{{season.subtitle}}</text>
+      <view class="section-title">{{plan.title}}</view>
+      <text class="muted pu-section-note">{{plan.subtitle}}</text>
     </view>
     <view class="pu-grid-list">
       <view
-        wx:for="{{seasonalRecipes}}"
+        wx:for="{{fatLossRecipes}}"
         wx:key="id"
         class="pu-grid-card pu-season-card"
         data-id="{{item.id}}"
@@ -38,9 +38,9 @@
           wx:if="{{item.hasImage && !item.imageFailed}}"
           class="pu-grid-image"
           src="{{item.image}}"
-          mode="aspectFit"
+          mode="aspectFill"
           data-id="{{item.id}}"
-          binderror="handleSeasonalImageError"
+          binderror="handleFatLossImageError"
         />
         <view wx:else class="pu-grid-image pu-image-fallback">
           <view class="pu-image-fallback-emoji">{{item.emoji}}</view>
@@ -73,7 +73,7 @@
           wx:if="{{item.hasImage && !item.imageFailed}}"
           class="pu-grid-image"
           src="{{item.image}}"
-          mode="aspectFit"
+          mode="aspectFill"
           data-id="{{item.id}}"
           binderror="handleSoupImageError"
         />
@@ -84,40 +84,6 @@
         <view class="pu-grid-body">
           <view class="pu-grid-title">{{item.title}}</view>
           <view class="pu-grid-sub">{{item.subtitle}}</view>
-        </view>
-      </view>
-    </view>
-  </view>
-
-  <view class="section pu-section">
-    <view class="row-between">
-      <view class="section-title">爆款推荐</view>
-      <text class="muted" bindtap="goHome">看更多菜谱</text>
-    </view>
-    <view class="pu-hot-grid">
-      <view
-        wx:for="{{hotRecipes}}"
-        wx:key="id"
-        class="pu-hot-card"
-        data-id="{{item.id}}"
-        data-ingredient-ids="{{item.ingredientIds}}"
-        bindtap="pickRecipe"
-      >
-        <image
-          wx:if="{{item.hasImage && !item.imageFailed}}"
-          class="pu-hot-image"
-          src="{{item.image}}"
-          mode="aspectFit"
-          data-id="{{item.id}}"
-          binderror="handleHotImageError"
-        />
-        <view wx:else class="pu-hot-image pu-image-fallback pu-hot-image-fallback">
-          <view class="pu-image-fallback-emoji">{{item.emoji}}</view>
-          <view class="pu-image-fallback-copy">{{item.title}}</view>
-        </view>
-        <view class="pu-hot-body">
-          <view class="pu-hot-title">{{item.title}}</view>
-          <view class="pu-hot-sub">{{item.subtitle}}</view>
         </view>
       </view>
     </view>

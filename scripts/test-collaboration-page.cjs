@@ -83,6 +83,9 @@ function toPlainObject(value) {
   const toastCalls = [];
   const cloudCalls = [];
   const store = {
+    isSetupCompleted() {
+      return true;
+    },
     getSettings() {
       return {
         contactName: "张阿姨",

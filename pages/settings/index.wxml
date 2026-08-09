@@ -1,5 +1,107 @@
 <view class="page settings-page">
-  <view class="card">
+  <view class="setup-panel" wx:if="{{isOnboarding}}">
+    <view class="setup-kicker">开始使用</view>
+    <view class="setup-title">先完成基础设置</view>
+    <view class="setup-copy">保存后可以提交采购清单；暂时跳过也能浏览和选择菜品。</view>
+
+    <view class="setup-form">
+      <view class="setup-step-title">1. 基础信息</view>
+      <view>
+        <text class="field-label">怎么称呼你</text>
+        <input
+          class="field-input"
+          value="{{contactName}}"
+          placeholder="例如：小林"
+          maxlength="12"
+          focus
+          bindinput="updateContactName"
+        />
+      </view>
+      <view>
+        <text class="field-label">默认采购备注（选填）</text>
+        <input
+          class="field-input"
+          value="{{defaultRemark}}"
+          placeholder="例如：少辣、不要香菜"
+          maxlength="40"
+          bindinput="updateDefaultRemark"
+        />
+      </view>
+    </view>
+
+    <view class="setup-collab">
+      <view class="setup-step-title">2. 绑定并选择采购人</view>
+      <view class="setup-step-copy">双方交换邀请码完成绑定，再选择默认接收采购清单的人。</view>
+
+      <view class="setup-collab-block">
+        <text class="field-label">我的邀请码</text>
+        <view class="collab-invite-row">
+          <view class="field-input collab-invite-code invite-code-box">{{inviteCode || '点击右侧生成'}}</view>
+          <button
+            class="btn-secondary collab-action"
+            bindtap="createInviteCode"
+            disabled="{{inviteCreating || !collabDisplayName}}"
+            loading="{{inviteCreating}}"
+          >
+            {{inviteCreating ? '生成中...' : '生成邀请码'}}
+          </button>
+        </view>
+        <view class="field-helper" wx:if="{{inviteCodeExpiresText}}">{{inviteCodeExpiresText}}</view>
+      </view>
+
+      <view class="setup-collab-block">
+        <text class="field-label">输入采购人的邀请码</text>
+        <view class="collab-invite-row">
+          <input
+            class="field-input collab-invite-code"
+            value="{{inviteCodeInput}}"
+            placeholder="6 位邀请码"
+            maxlength="6"
+            bindinput="updateInviteCodeInput"
+            bindconfirm="redeemInviteCode"
+          />
+          <button
+            class="btn-secondary collab-action"
+            bindtap="redeemInviteCode"
+            disabled="{{inviteCodeInput.length < 6 || inviteRedeeming || !collabDisplayName}}"
+            loading="{{inviteRedeeming}}"
+          >
+            {{inviteRedeeming ? '绑定中...' : '立即绑定'}}
+          </button>
+        </view>
+        <view class="invite-error" wx:if="{{inviteErrorText}}">{{inviteErrorText}}</view>
+      </view>
+
+      <view class="setup-collab-block">
+        <text class="field-label">默认采购人</text>
+        <view class="collab-empty" wx:if="{{collaboratorsLoading}}">正在加载已绑定人员...</view>
+        <view class="collab-empty" wx:if="{{!collaboratorsLoading && collaboratorsError}}">{{collaboratorsError}}</view>
+        <view class="collab-empty" wx:if="{{!collaboratorsLoading && !collaboratorsError && !collaborators.length}}">还没有绑定人员，请先交换邀请码。</view>
+        <view class="setup-receiver-list" wx:if="{{!collaboratorsLoading && !collaboratorsError && collaborators.length}}">
+          <view wx:for="{{collaborators}}" wx:key="partnerOpenid" class="setup-receiver-row">
+            <view class="setup-receiver-copy">
+              <view class="setup-receiver-name">{{item.partnerName}}</view>
+              <view class="setup-receiver-state">{{defaultReceiverOpenid === item.partnerOpenid ? '已选为默认采购人' : '可接收采购清单'}}</view>
+            </view>
+            <button
+              class="{{defaultReceiverOpenid === item.partnerOpenid ? 'setup-receiver-btn setup-receiver-btn-active' : 'setup-receiver-btn'}}"
+              data-openid="{{item.partnerOpenid}}"
+              bindtap="setDefaultReceiver"
+              disabled="{{defaultReceiverOpenid === item.partnerOpenid}}"
+            >
+              {{defaultReceiverOpenid === item.partnerOpenid ? '已选择' : '选择'}}
+            </button>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="setup-notice">未绑定默认采购人时只能跳过浏览，不能提交采购清单。</view>
+    <button class="btn-primary setup-primary" bindtap="saveBasicSettings">保存全部设置并进入</button>
+    <button class="setup-skip" bindtap="skipSetup">暂时跳过，先看菜品</button>
+  </view>
+
+  <view class="card" wx:if="{{!isOnboarding}}">
     <view class="section-title">我的</view>
     <view class="title">订单和协作都在这里</view>
     <view class="subtitle">
@@ -7,7 +109,37 @@
     </view>
   </view>
 
-  <view class="section">
+  <view class="section" wx:if="{{!isOnboarding}}">
+    <view class="settings-section-head">
+      <view class="section-title">基础设置</view>
+      <view class="section-subtitle">用于保存采购清单和显示提交人信息。</view>
+    </view>
+    <view class="stack basic-settings-form">
+      <view>
+        <text class="field-label">怎么称呼你</text>
+        <input
+          class="field-input"
+          value="{{contactName}}"
+          placeholder="例如：小林"
+          maxlength="12"
+          bindinput="updateContactName"
+        />
+      </view>
+      <view>
+        <text class="field-label">默认采购备注（选填）</text>
+        <input
+          class="field-input"
+          value="{{defaultRemark}}"
+          placeholder="例如：少辣、不要香菜"
+          maxlength="40"
+          bindinput="updateDefaultRemark"
+        />
+      </view>
+      <button class="btn-primary" bindtap="saveBasicSettings">保存基础设置</button>
+    </view>
+  </view>
+
+  <view class="section" wx:if="{{!isOnboarding}}">
     <view class="row-between settings-section-head">
       <view>
         <view class="section-title">已保存订单</view>
@@ -31,7 +163,7 @@
     <button class="btn-ghost" wx:if="{{ordersCount}}" bindtap="clearOrders">清空订单记录</button>
   </view>
 
-  <view class="section">
+  <view class="section" wx:if="{{!isOnboarding}}">
     <view class="row-between settings-section-head">
       <view>
         <view class="section-title">协作人管理</view>
@@ -79,7 +211,7 @@
             bindinput="updateInviteCodeInput"
             bindconfirm="redeemInviteCode"
           />
-          <button class="btn-ghost collab-action" bindtap="redeemInviteCode" disabled="{{inviteCodeInput.length < 6 || inviteRedeeming}}" loading="{{inviteRedeeming}}">
+          <button class="btn-secondary collab-action" bindtap="redeemInviteCode" disabled="{{inviteCodeInput.length < 6 || inviteRedeeming}}" loading="{{inviteRedeeming}}">
             {{inviteRedeeming ? '绑定中...' : '立即绑定'}}
           </button>
         </view>

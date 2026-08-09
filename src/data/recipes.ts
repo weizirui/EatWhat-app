@@ -1,4 +1,4 @@
-﻿export type Recipe = {
+export type Recipe = {
   id: string;
   title: string;
   emoji: string;
@@ -15,7 +15,7 @@
 
 export const RECIPES: Recipe[] = [
   // ════════════════════════════════════════
-  //  凉菜 · 20 道
+  //  减脂餐 · 31 道
   // ════════════════════════════════════════
   {
     id: "smashed-cucumber",
@@ -23,7 +23,7 @@ export const RECIPES: Recipe[] = [
     emoji: "🥒",
     minutes: 3,
     difficulty: "零失败",
-    category: "凉菜",
+    category: "减脂餐",
     ingredient_ids: ["cucumber", "garlic"],
     base_seasonings: ["生抽", "醋", "糖", "香油"],
     steps: [
@@ -40,7 +40,7 @@ export const RECIPES: Recipe[] = [
     emoji: "🧊",
     minutes: 5,
     difficulty: "零失败",
-    category: "凉菜",
+    category: "减脂餐",
     ingredient_ids: ["tofu", "scallion", "garlic"],
     base_seasonings: ["生抽", "醋", "糖", "香油"],
     steps: [
@@ -57,7 +57,7 @@ export const RECIPES: Recipe[] = [
     emoji: "🍄",
     minutes: 8,
     difficulty: "零失败",
-    category: "凉菜",
+    category: "减脂餐",
     ingredient_ids: ["fungus", "garlic", "cilantro"],
     base_seasonings: ["生抽", "醋", "糖", "辣椒油"],
     steps: [
@@ -74,7 +74,7 @@ export const RECIPES: Recipe[] = [
     emoji: "🥬",
     minutes: 6,
     difficulty: "零失败",
-    category: "凉菜",
+    category: "减脂餐",
     ingredient_ids: ["spinach", "garlic"],
     base_seasonings: ["生抽", "醋", "香油", "芝麻"],
     steps: [
@@ -91,7 +91,7 @@ export const RECIPES: Recipe[] = [
     emoji: "🪷",
     minutes: 10,
     difficulty: "简单",
-    category: "凉菜",
+    category: "减脂餐",
     ingredient_ids: ["lotus_root", "scallion", "garlic"],
     base_seasonings: ["生抽", "醋", "糖", "辣椒油"],
     steps: [
@@ -108,7 +108,7 @@ export const RECIPES: Recipe[] = [
     emoji: "🥒",
     minutes: 5,
     difficulty: "零失败",
-    category: "凉菜",
+    category: "减脂餐",
     ingredient_ids: ["cucumber", "garlic", "cilantro"],
     base_seasonings: ["生抽", "醋", "糖", "香油"],
     steps: [
@@ -125,7 +125,7 @@ export const RECIPES: Recipe[] = [
     emoji: "🌊",
     minutes: 10,
     difficulty: "零失败",
-    category: "凉菜",
+    category: "减脂餐",
     ingredient_ids: ["kelp", "garlic", "cilantro"],
     base_seasonings: ["生抽", "醋", "糖", "辣椒油"],
     steps: [
@@ -141,7 +141,7 @@ export const RECIPES: Recipe[] = [
     emoji: "🥬",
     minutes: 8,
     difficulty: "零失败",
-    category: "凉菜",
+    category: "减脂餐",
     ingredient_ids: ["spinach", "fungus", "garlic"],
     base_seasonings: ["生抽", "醋", "香油"],
     steps: [
@@ -158,7 +158,7 @@ export const RECIPES: Recipe[] = [
     emoji: "🍅",
     minutes: 3,
     difficulty: "零失败",
-    category: "凉菜",
+    category: "减脂餐",
     ingredient_ids: ["tomato"],
     base_seasonings: ["白糖"],
     steps: [
@@ -175,7 +175,7 @@ export const RECIPES: Recipe[] = [
     emoji: "🍄",
     minutes: 12,
     difficulty: "简单",
-    category: "凉菜",
+    category: "减脂餐",
     ingredient_ids: ["shiitake", "cilantro", "garlic"],
     base_seasonings: ["生抽", "醋", "香油", "糖"],
     steps: [
@@ -192,7 +192,7 @@ export const RECIPES: Recipe[] = [
     emoji: "🫛",
     minutes: 15,
     difficulty: "零失败",
-    category: "凉菜",
+    category: "减脂餐",
     ingredient_ids: ["edamame", "dried_chili", "garlic"],
     base_seasonings: ["盐", "生抽", "醋", "香油"],
     steps: [
@@ -209,7 +209,7 @@ export const RECIPES: Recipe[] = [
     emoji: "🎋",
     minutes: 10,
     difficulty: "简单",
-    category: "凉菜",
+    category: "减脂餐",
     ingredient_ids: ["bamboo_shoot", "garlic", "cilantro"],
     base_seasonings: ["生抽", "醋", "糖", "香油"],
     steps: [
@@ -225,7 +225,7 @@ export const RECIPES: Recipe[] = [
     emoji: "🍄",
     minutes: 8,
     difficulty: "零失败",
-    category: "凉菜",
+    category: "减脂餐",
     ingredient_ids: ["enoki", "garlic", "cilantro"],
     base_seasonings: ["生抽", "醋", "糖", "辣椒油"],
     steps: [
@@ -242,7 +242,7 @@ export const RECIPES: Recipe[] = [
     emoji: "📜",
     minutes: 8,
     difficulty: "零失败",
-    category: "凉菜",
+    category: "减脂餐",
     ingredient_ids: ["tofu_skin", "cucumber", "cilantro", "garlic"],
     base_seasonings: ["生抽", "醋", "糖", "香油", "辣椒油"],
     steps: [
@@ -259,7 +259,7 @@ export const RECIPES: Recipe[] = [
     emoji: "🥜",
     minutes: 20,
     difficulty: "零失败",
-    category: "凉菜",
+    category: "减脂餐",
     ingredient_ids: ["peanut", "cilantro", "dried_chili"],
     base_seasonings: ["醋", "生抽", "糖"],
     steps: [
@@ -276,7 +276,7 @@ export const RECIPES: Recipe[] = [
     emoji: "🥒",
     minutes: 20,
     difficulty: "中等",
-    category: "凉菜",
+    category: "减脂餐",
     ingredient_ids: ["cucumber", "garlic", "dried_chili"],
     base_seasonings: ["生抽", "醋", "糖", "香油"],
     steps: [
@@ -293,7 +293,7 @@ export const RECIPES: Recipe[] = [
     emoji: "🍄",
     minutes: 10,
     difficulty: "零失败",
-    category: "凉菜",
+    category: "减脂餐",
     ingredient_ids: ["mushroom", "garlic", "cilantro"],
     base_seasonings: ["生抽", "醋", "香油", "糖"],
     steps: [
@@ -309,7 +309,7 @@ export const RECIPES: Recipe[] = [
     emoji: "🧊",
     minutes: 10,
     difficulty: "零失败",
-    category: "凉菜",
+    category: "减脂餐",
     ingredient_ids: ["kelp", "tofu", "garlic", "cilantro"],
     base_seasonings: ["生抽", "醋", "香油"],
     steps: [
@@ -325,7 +325,7 @@ export const RECIPES: Recipe[] = [
     emoji: "🥬",
     minutes: 10,
     difficulty: "零失败",
-    category: "凉菜",
+    category: "减脂餐",
     ingredient_ids: ["spinach", "fungus", "carrot", "garlic"],
     base_seasonings: ["生抽", "醋", "糖", "香油"],
     steps: [
@@ -342,7 +342,7 @@ export const RECIPES: Recipe[] = [
     emoji: "🥕",
     minutes: 10,
     difficulty: "简单",
-    category: "凉菜",
+    category: "减脂餐",
     ingredient_ids: ["carrot", "cucumber", "lotus_root", "garlic"],
     base_seasonings: ["生抽", "醋", "糖", "香油", "辣椒油"],
     steps: [
@@ -352,6 +352,102 @@ export const RECIPES: Recipe[] = [
       "生抽、醋、糖、香油、辣椒油拌匀",
     ],
     tip: "黄瓜丝不必焯水，保留爽脆。",
+  },
+  {
+    id: "fatloss-chicken-broccoli-sweet-potato",
+    title: "西兰花鸡胸红薯碗",
+    emoji: "🥦",
+    minutes: 18,
+    difficulty: "简单",
+    category: "减脂餐",
+    ingredient_ids: ["chicken_breast", "broccoli", "sweet_potato", "garlic"],
+    base_seasonings: ["盐", "黑胡椒", "生抽", "少量食用油"],
+    steps: ["红薯切块蒸熟", "鸡胸切片腌 8 分钟后薄油煎熟", "西兰花焯水 1 分钟", "将三样装碗并撒少量黑胡椒"],
+    tip: "红薯提供适量碳水，鸡胸和西兰花补充蛋白质与蔬菜。",
+  },
+  {
+    id: "fatloss-shrimp-corn-salad",
+    title: "鲜虾玉米生菜沙拉",
+    emoji: "🦐",
+    minutes: 16,
+    difficulty: "简单",
+    category: "减脂餐",
+    ingredient_ids: ["shrimp", "corn", "lettuce", "cucumber"],
+    base_seasonings: ["盐", "黑胡椒", "醋", "少量生抽"],
+    steps: ["鲜虾去虾线后煮熟", "玉米粒焯熟，黄瓜切片", "生菜洗净沥干后铺碗", "放入鲜虾和玉米，淋少量油醋汁"],
+    tip: "玉米提供碳水，搭配鲜虾和蔬菜就是一套完整轻食。",
+  },
+  {
+    id: "fatloss-seabass-sweet-potato",
+    title: "鲈鱼小白菜红薯餐",
+    emoji: "🐟",
+    minutes: 22,
+    difficulty: "简单",
+    category: "减脂餐",
+    ingredient_ids: ["sea_bass", "bok_choy", "sweet_potato", "ginger"],
+    base_seasonings: ["盐", "蒸鱼豉油", "料酒"],
+    steps: ["红薯切块蒸熟", "鲈鱼放姜丝和料酒，水开蒸 10 分钟", "小白菜焯熟铺盘", "鲈鱼淋少量蒸鱼豉油后与红薯装盘"],
+    tip: "海鱼、绿叶菜和红薯组合，饱腹但不过量。",
+  },
+  {
+    id: "fatloss-chicken-mushroom-corn",
+    title: "香菇鸡胸玉米碗",
+    emoji: "🍄",
+    minutes: 24,
+    difficulty: "简单",
+    category: "减脂餐",
+    ingredient_ids: ["chicken_breast", "shiitake", "corn", "scallion"],
+    base_seasonings: ["生抽", "料酒", "白胡椒粉", "淀粉"],
+    steps: ["玉米粒焯熟备用", "鸡胸切片后加调味料抓匀", "香菇与鸡胸水开蒸 12 分钟", "与玉米装碗后撒葱花"],
+    tip: "少量玉米补充碳水，蒸鸡胸不需要额外放油。",
+  },
+  {
+    id: "fatloss-tomato-tofu-rice",
+    title: "番茄豆腐小份米饭",
+    emoji: "🍅",
+    minutes: 15,
+    difficulty: "零失败",
+    category: "减脂餐",
+    ingredient_ids: ["tomato", "tofu", "rice", "scallion"],
+    base_seasonings: ["盐", "生抽", "白胡椒粉"],
+    steps: ["米饭按小份量煮熟", "番茄少油炒软出汁", "加豆腐和半碗水煮 6 分钟", "番茄豆腐与小份米饭装盘"],
+    tip: "米饭控制在一小碗，和豆腐搭配比单吃蔬菜更耐饿。",
+  },
+  {
+    id: "fatloss-beef-lettuce-corn",
+    title: "牛肉玉米生菜卷",
+    emoji: "🥬",
+    minutes: 18,
+    difficulty: "简单",
+    category: "减脂餐",
+    ingredient_ids: ["beef", "lettuce", "corn", "onion"],
+    base_seasonings: ["生抽", "黑胡椒", "料酒", "淀粉"],
+    steps: ["玉米粒焯熟", "牛肉逆纹切丝后腌 8 分钟", "少油快炒牛肉和洋葱", "用生菜叶包入牛肉和玉米食用"],
+    tip: "玉米提供适量碳水，牛肉大火快炒能保持嫩度。",
+  },
+  {
+    id: "fatloss-egg-spinach-sweet-potato",
+    title: "菠菜滑蛋红薯沙拉",
+    emoji: "🥚",
+    minutes: 12,
+    difficulty: "零失败",
+    category: "减脂餐",
+    ingredient_ids: ["egg", "spinach", "mushroom", "sweet_potato"],
+    base_seasonings: ["盐", "白胡椒粉", "少量食用油"],
+    steps: ["红薯切块蒸熟", "菠菜焯水，蘑菇少油炒软", "倒入蛋液轻推至凝固", "与红薯装盘，按口味加少量醋汁"],
+    tip: "红薯和鸡蛋让沙拉更有饱腹感，适合当作完整一餐。",
+  },
+  {
+    id: "fatloss-sweet-potato-chicken-bowl",
+    title: "红薯鸡胸能量碗",
+    emoji: "🍠",
+    minutes: 25,
+    difficulty: "简单",
+    category: "减脂餐",
+    ingredient_ids: ["sweet_potato", "chicken_breast", "broccoli", "egg"],
+    base_seasonings: ["盐", "黑胡椒", "生抽"],
+    steps: ["红薯切块蒸熟，鸡蛋煮熟切半", "西兰花焯熟", "鸡胸用平底锅少油煎熟切条", "所有食材装碗并撒黑胡椒"],
+    tip: "包含蛋白质、蔬菜和适量主食，适合作为完整的一餐。",
   },
 
   // ════════════════════════════════════════
@@ -3957,7 +4053,7 @@ export const RECIPES: Recipe[] = [
     emoji: "🥬",
     minutes: 6,
     difficulty: "零失败",
-    category: "凉菜",
+    category: "减脂餐",
     ingredient_ids: ["lettuce", "garlic"],
     base_seasonings: ["生抽", "醋", "香油", "白糖"],
     steps: ["生菜洗净撕大片", "蒜切末", "调入生抽、醋、糖和香油", "拌匀后静置 2 分钟"],
@@ -3969,7 +4065,7 @@ export const RECIPES: Recipe[] = [
     emoji: "🥒",
     minutes: 8,
     difficulty: "简单",
-    category: "凉菜",
+    category: "减脂餐",
     ingredient_ids: ["kelp", "cucumber", "garlic"],
     base_seasonings: ["生抽", "醋", "辣椒油", "香油"],
     steps: ["海带焯水切丝", "黄瓜切丝", "蒜末和调味料拌成汁", "全部拌匀"],
@@ -3981,7 +4077,7 @@ export const RECIPES: Recipe[] = [
     emoji: "🥜",
     minutes: 12,
     difficulty: "简单",
-    category: "凉菜",
+    category: "减脂餐",
     ingredient_ids: ["edamame", "peanut", "garlic"],
     base_seasonings: ["盐", "生抽", "醋", "辣椒油"],
     steps: ["毛豆煮熟去壳", "花生煮熟或用熟花生", "加蒜末和调味料", "拌匀冷藏 10 分钟"],

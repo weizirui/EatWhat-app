@@ -20,6 +20,9 @@ function buildRecipeCloudPath(recipeId) {
 function buildRecipePrompt(recipe) {
   const title = normalizeRecipeTitle(recipe);
   const category = recipe && recipe.category ? `，${recipe.category}` : "";
+  if (recipe && recipe.id === "chicken-soup") {
+    return `${title}${category}，中式家常鸡汤摄影，白色陶瓷汤碗，清亮金黄色鸡汤，只展示切块熟鸡肉、香菇和少量葱花，俯拍居中构图，明亮自然光，精致摆盘，不出现鸡头、鸡脖、鸡脚、整鸡或活鸡，无文字无水印`;
+  }
   return `${title}${category}，中式家常菜摄影，明亮自然光，完整菜品，精致摆盘`;
 }
 

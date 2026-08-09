@@ -9,13 +9,19 @@ const successScript = fs.readFileSync(path.join(root, "pages/checkout-success/in
 const successTemplate = fs.readFileSync(path.join(root, "pages/checkout-success/index.wxml"), "utf8");
 const storeScript = fs.readFileSync(path.join(root, "utils/store.js"), "utf8");
 
-assert.doesNotMatch(settingsTemplate, /默认联系人/);
-assert.doesNotMatch(settingsTemplate, /默认备注/);
 assert.doesNotMatch(settingsTemplate, /默认用餐时间偏移/);
-assert.doesNotMatch(settingsTemplate, /保存设置/);
+assert.match(settingsTemplate, /先完成基础设置/);
+assert.match(settingsTemplate, /保存全部设置并进入/);
+assert.match(settingsTemplate, /暂时跳过，先看菜品/);
+assert.match(settingsTemplate, /输入采购人的邀请码/);
+assert.match(settingsTemplate, /默认采购人/);
+assert.match(settingsTemplate, /未绑定默认采购人时只能跳过浏览/);
+assert.match(settingsTemplate, /保存基础设置/);
 assert.match(settingsTemplate, /已保存订单/);
 assert.match(settingsTemplate, /查看详情/);
 assert.match(settingsScript, /openOrderDetail/);
+assert.match(settingsScript, /saveBasicSettings/);
+assert.match(settingsScript, /skipSetup/);
 assert.match(successScript, /getOrderById/);
 assert.match(successScript, /setNavigationBarTitle/);
 assert.match(successScript, /source === "settings"/);

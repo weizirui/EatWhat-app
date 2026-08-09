@@ -165,7 +165,7 @@ Page({
       return;
     }
     wx.navigateTo({
-      url: "/pages/settings/index",
+      url: "/pages/settings/index?source=manage",
     });
   },
 });

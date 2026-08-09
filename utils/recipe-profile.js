@@ -373,6 +373,11 @@ function estimateProtein(recipe) {
   }, 0));
 }
 
+function isColdDish(recipe) {
+  const text = `${recipe.id} ${recipe.title} ${recipe.steps.join(" ")}`;
+  return /(^|\s)cold-|凉拌|拍黄瓜|蒜蓉黄瓜|蓑衣黄瓜|醋泡花生|糖拌番茄/.test(text);
+}
+
 function detectFlavors(recipe) {
   const text = `${recipe.title} ${recipe.steps.join(" ")} ${recipe.base_seasonings.join(" ")}`;
   for (const rule of KEYWORD_FLAVOR_RULES) {
@@ -387,8 +392,11 @@ function detectFlavors(recipe) {
   if (recipe.category === "甜品") {
     return ["香甜", "绵密"];
   }
-  if (recipe.category === "凉菜") {
+  if (isColdDish(recipe)) {
     return ["清爽", "解腻"];
+  }
+  if (recipe.category === "减脂餐") {
+    return ["清淡", "轻负担"];
   }
   return ["家常", "鲜香"];
 }
@@ -408,8 +416,12 @@ function suitableForRecipe(recipe, calories, flavors) {
     return ["重口味爱好者", "下饭场景", "聚餐分享"];
   }
 
-  if (recipe.category === "凉菜") {
+  if (isColdDish(recipe)) {
     return ["夏日餐桌", "减负晚餐", "需要解腻的人"];
+  }
+
+  if (recipe.category === "减脂餐") {
+    return ["减脂晚餐", "上班族", "想吃清淡的人"];
   }
 
   return ["家常晚餐", "上班族", "新手做饭"];
@@ -454,7 +466,7 @@ function estimateServings(recipe) {
   if (recipe.category === "甜品") {
     return "2 人份";
   }
-  if (recipe.category === "凉菜") {
+  if (isColdDish(recipe)) {
     return "2 人份";
   }
   if (recipe.ingredient_ids.length >= 4 || recipe.minutes >= 35) {
@@ -586,7 +598,7 @@ function buildConditionAdvice(recipe, calories, protein, flavors) {
   if (ingredientIds.some((id) => ["beef", "lamb", "chicken_thigh", "chicken_breast", "egg", "shrimp", "ribs"].includes(id))) {
     periodScore += 2;
   }
-  if (recipe.category === "凉菜") periodScore -= 3;
+  if (isColdDish(recipe)) periodScore -= 3;
   if (periodScore >= 3) {
     pushAdvice(
       "经期",
@@ -602,7 +614,7 @@ function buildConditionAdvice(recipe, calories, protein, flavors) {
   if (/蒸|炖|煮|汤|粥/.test(joined)) stomachScore += 1;
   if (ingredientIds.some((id) => ["ginger", "egg", "tofu", "firm_tofu"].includes(id))) stomachScore += 1;
   if (hasSpicy) stomachScore -= 2;
-  if (recipe.category === "凉菜") stomachScore -= 3;
+  if (isColdDish(recipe)) stomachScore -= 3;
   if (stomachScore >= 3) {
     pushAdvice(
       "养胃",

@@ -11,6 +11,16 @@ const { buildMenuPlan } = require("../../utils/menu-plan");
 const { getIngredientsByIds } = require("../../utils/catalog");
 const { generateRecipeImageIfMissing } = require("../../utils/ai-image");
 
+const HIDDEN_RECIPE_CATEGORIES = new Set(["甜品", "自制", "主食"]);
+const HIDDEN_RECIPE_IDS = new Set(["chicken-soup"]);
+
+function getVisibleRecipes() {
+  return RECIPES.filter((item) => (
+    !HIDDEN_RECIPE_IDS.has(item.id)
+    && !HIDDEN_RECIPE_CATEGORIES.has(item.category)
+  ));
+}
+
 function sortCategories(list) {
   return list.slice().sort((a, b) => a.sort - b.sort);
 }
@@ -32,6 +42,8 @@ Page({
   data: {
     categories: [],
     activeCategory: "",
+    activeCategoryIndex: 0,
+    activeCategoryName: "",
     recipes: [],
     selectedRecipeIds: [],
     selectedRecipes: [],
@@ -47,7 +59,7 @@ Page({
 
   onLoad() {
     const categoryMap = new Map();
-    RECIPES.forEach((item) => {
+    getVisibleRecipes().forEach((item) => {
       if (!categoryMap.has(item.category)) {
         categoryMap.set(item.category, {
           id: item.category,
@@ -60,6 +72,8 @@ Page({
     const categories = Array.from(categoryMap.values());
     this.setData({
       activeCategory: categories[0] ? categories[0].id : "",
+      activeCategoryIndex: 0,
+      activeCategoryName: categories[0] ? categories[0].name : "请选择分类",
       categories,
     });
   },
@@ -77,12 +91,13 @@ Page({
       ...item,
       className: item.id === activeCategory ? "chip active" : "chip",
     }));
+    const visibleRecipes = getVisibleRecipes();
     const baseList = searchQuery
-      ? RECIPES.filter((item) => {
+      ? visibleRecipes.filter((item) => {
           const text = `${item.title} ${item.category} ${(item.ingredient_ids || []).join(" ")} ${item.difficulty}`.toLowerCase();
           return text.includes(searchQuery);
         })
-      : RECIPES.filter((item) => item.category === activeCategory);
+      : visibleRecipes.filter((item) => item.category === activeCategory);
 
     const recipes = baseList
       .slice()
@@ -166,10 +181,16 @@ Page({
     });
   },
 
-  setCategory(event) {
-    const { id } = event.currentTarget.dataset;
+  changeCategory(event) {
+    const index = Number(event.detail.value) || 0;
+    const category = this.data.categories[index];
+    if (!category) {
+      return;
+    }
     this.setData({
-      activeCategory: id,
+      activeCategory: category.id,
+      activeCategoryIndex: index,
+      activeCategoryName: category.name,
     });
     this.refresh();
   },
@@ -247,7 +268,7 @@ Page({
 
   goSettings() {
     wx.navigateTo({
-      url: "/pages/settings/index",
+      url: "/pages/settings/index?source=manage",
     });
   },
 

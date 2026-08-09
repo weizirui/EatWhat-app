@@ -4,6 +4,10 @@ page {
   font-size: 28rpx;
 }
 
+image {
+  display: block;
+}
+
 .page {
   min-height: 100vh;
   padding: 32rpx 24rpx 40rpx;
@@ -142,6 +146,12 @@ page {
 
 .field-input {
   height: 88rpx;
+}
+
+input.field-input {
+  padding-top: 0;
+  padding-bottom: 0;
+  line-height: 88rpx;
 }
 
 .field-textarea {

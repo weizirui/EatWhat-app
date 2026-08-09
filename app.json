@@ -1,11 +1,11 @@
 {
   "pages": [
+    "pages/settings/index",
     "pages/landing/index",
     "pages/home/index",
     "pages/match/index",
     "pages/checkout-success/index",
     "pages/recipes/index",
-    "pages/settings/index",
     "pages/tasks/index",
     "pages/image-admin/index"
   ],

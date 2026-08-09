@@ -1,54 +1,14 @@
-const SEASON_RULES = [
-  {
-    key: "spring",
-    months: [3, 4, 5],
-    title: "春日时令",
-    subtitle: "适合鲜嫩、清爽、脆口一点的家常菜。",
-    headline: "春鲜上桌，吃点清爽的",
-    description: "根据当前季节优先推荐春鲜家常菜，再搭配汤品和甜口收尾。",
-    ingredientIds: ["bamboo_shoot", "spinach", "strawberry", "tofu", "cucumber"],
-    preferredCategories: ["凉菜", "蔬菜", "豆制品"],
-    hotIds: ["tomato-egg", "garlic-broccoli", "mapo-tofu", "egg-fried-rice"],
-  },
-  {
-    key: "summer",
-    months: [6, 7, 8],
-    title: "夏日时令",
-    subtitle: "适合清爽、快手、带点汤水和甜口的组合。",
-    headline: "夏天就该吃点清爽快手的",
-    description: "优先推荐夏季更常吃的清爽菜，再给你配上汤品和饭后甜品。",
-    ingredientIds: ["tomato", "cucumber", "loofah", "bitter_melon", "winter_melon", "mango"],
-    preferredCategories: ["凉菜", "蔬菜", "汤粥"],
-    hotIds: ["tomato-egg", "loofah-egg", "mapo-tofu", "egg-fried-rice"],
-  },
-  {
-    key: "autumn",
-    months: [9, 10, 11],
-    title: "秋日时令",
-    subtitle: "适合润一点、暖一点、带丰收感的家常搭配。",
-    headline: "秋天适合暖胃又有点丰盛",
-    description: "根据秋季食材偏好推荐时令菜，再补上汤品和甜口小点。",
-    ingredientIds: ["lotus_root", "taro", "pear", "pumpkin", "shiitake", "crab"],
-    preferredCategories: ["蔬菜", "肉禽", "汤粥"],
-    hotIds: ["braised-eggplant", "mapo-tofu", "pork-rib-lotus", "beef-rice-bowl"],
-  },
-  {
-    key: "winter",
-    months: [12, 1, 2],
-    title: "冬日时令",
-    subtitle: "适合暖胃、热汤热菜、炖煮感更足的选择。",
-    headline: "天冷了，来点热汤热菜",
-    description: "优先给你更适合冬天的暖胃菜式，也保留一口甜的收尾。",
-    ingredientIds: ["cabbage", "ribs", "lamb", "beef", "sweet_potato", "seaweed"],
-    preferredCategories: ["肉禽", "汤粥", "主食"],
-    hotIds: ["cola-wings", "mapo-tofu", "tomato-beef-soup", "beef-noodle"],
-  },
+const MEAL_LABELS = ["周一", "周二", "周三", "周四", "周五", "周六", "周日", "替换餐"];
+const FEATURED_FAT_LOSS_IDS = [
+  "fatloss-chicken-broccoli-sweet-potato",
+  "fatloss-shrimp-corn-salad",
+  "fatloss-seabass-sweet-potato",
+  "fatloss-chicken-mushroom-corn",
+  "fatloss-tomato-tofu-rice",
+  "fatloss-beef-lettuce-corn",
+  "fatloss-egg-spinach-sweet-potato",
+  "fatloss-sweet-potato-chicken-bowl",
 ];
-
-function detectSeason(date) {
-  const month = date.getMonth() + 1;
-  return SEASON_RULES.find((item) => item.months.includes(month)) || SEASON_RULES[1];
-}
 
 function uniqueById(list) {
   const seen = new Set();
@@ -61,150 +21,91 @@ function uniqueById(list) {
   });
 }
 
-function toRecipeCard(recipe) {
+function toRecipeCard(recipe, label) {
   return {
     id: recipe.id,
     title: recipe.title,
     emoji: recipe.emoji,
     category: recipe.category,
     minutes: recipe.minutes,
-    subtitle: `${recipe.category} · ${recipe.minutes} 分钟`,
+    subtitle: label
+      ? `${label} · ${recipe.minutes} 分钟 · ${recipe.difficulty}`
+      : `${recipe.category} · ${recipe.minutes} 分钟`,
     ingredientIds: recipe.ingredient_ids.join(","),
   };
 }
 
-function countIngredientMatches(recipe, ingredientIds) {
-  return recipe.ingredient_ids.reduce((sum, id) => sum + (ingredientIds.includes(id) ? 1 : 0), 0);
-}
-
-function seasonalScore(recipe, season) {
-  let score = countIngredientMatches(recipe, season.ingredientIds) * 4;
-
-  if (season.preferredCategories.includes(recipe.category)) {
-    score += 2;
-  }
-
-  if (season.key === "summer" || season.key === "spring") {
-    if (recipe.minutes <= 15) {
-      score += 2;
-    }
-  } else if (recipe.minutes >= 20) {
-    score += 1;
-  }
-
-  return score;
-}
-
-function fillToCount(primary, fallback, count) {
-  return uniqueById(primary.concat(fallback)).slice(0, count);
-}
-
-function getRecommendationDayKey(date) {
+function getRecommendationWeekKey(date) {
   const current = date || new Date();
-  const year = current.getFullYear();
-  const month = String(current.getMonth() + 1).padStart(2, "0");
-  const day = String(current.getDate()).padStart(2, "0");
+  const monday = new Date(current.getFullYear(), current.getMonth(), current.getDate());
+  const distanceFromMonday = (monday.getDay() + 6) % 7;
+  monday.setDate(monday.getDate() - distanceFromMonday);
+  const year = monday.getFullYear();
+  const month = String(monday.getMonth() + 1).padStart(2, "0");
+  const day = String(monday.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
 
-function getDaySerial(date) {
+function getWeekSerial(date) {
   const current = date || new Date();
-  return Math.floor(Date.UTC(current.getFullYear(), current.getMonth(), current.getDate()) / 86400000);
+  const distanceFromMonday = (current.getDay() + 6) % 7;
+  const mondayUtc = Date.UTC(
+    current.getFullYear(),
+    current.getMonth(),
+    current.getDate() - distanceFromMonday,
+  );
+  return Math.floor(mondayUtc / 604800000);
 }
 
-function rotateForDay(list, date, sectionOffset) {
+function rotateForWeek(list, date, offset) {
   if (list.length < 2) {
     return list.slice();
   }
-  const offset = (getDaySerial(date) + sectionOffset) % list.length;
-  return list.slice(offset).concat(list.slice(0, offset));
+  const start = (getWeekSerial(date) + offset) % list.length;
+  return list.slice(start).concat(list.slice(0, start));
 }
 
-function buildSeasonalRecipes(recipes, season, date) {
-  const seasonalPool = recipes
-    .filter((item) => item.category !== "汤粥" && item.category !== "甜品" && item.category !== "自制")
-    .map((item) => ({
-      recipe: item,
-      score: seasonalScore(item, season),
-    }))
-    .filter((item) => item.score > 0)
-    .sort((a, b) => {
-      if (b.score !== a.score) {
-        return b.score - a.score;
-      }
-      return a.recipe.minutes - b.recipe.minutes;
-    })
-    .map((item) => item.recipe);
-
-  const fallbackPool = recipes
-    .filter((item) => item.category !== "汤粥" && item.category !== "甜品" && item.category !== "自制")
-    .sort((a, b) => a.minutes - b.minutes);
-
-  const dailyPool = rotateForDay(seasonalPool.slice(0, 9), date, 0);
-  const dailyFallback = rotateForDay(fallbackPool, date, 3);
-  return fillToCount(dailyPool, dailyFallback, 3).map(toRecipeCard);
-}
-
-function buildCategoryRecipes(recipes, season, category, count, date) {
-  const primaryPool = recipes
-    .filter((item) => item.category === category)
-    .map((item) => ({
-      recipe: item,
-      score: seasonalScore(item, season),
-    }))
-    .sort((a, b) => {
-      if (b.score !== a.score) {
-        return b.score - a.score;
-      }
-      return a.recipe.minutes - b.recipe.minutes;
-    })
-    .map((item) => item.recipe);
-
-  const fallbackPool = recipes
-    .filter((item) => item.category === category)
-    .sort((a, b) => a.minutes - b.minutes);
-
-  const dailyPool = rotateForDay(primaryPool.slice(0, 8), date, 5);
-  const dailyFallback = rotateForDay(fallbackPool, date, 7);
-  return fillToCount(dailyPool, dailyFallback, count).map(toRecipeCard);
-}
-
-function buildHotRecipes(recipes, season) {
-  const recipeMap = recipes.reduce((acc, item) => {
-    acc[item.id] = item;
-    return acc;
+function buildFatLossRecipes(recipes, date) {
+  const recipeMap = recipes.reduce((result, recipe) => {
+    result[recipe.id] = recipe;
+    return result;
   }, {});
-
-  const curated = season.hotIds.map((id) => recipeMap[id]).filter(Boolean);
+  const featured = rotateForWeek(
+    FEATURED_FAT_LOSS_IDS.map((id) => recipeMap[id]).filter(Boolean),
+    date,
+    0,
+  );
   const fallback = recipes
-    .filter((item) => item.category !== "甜品" && item.category !== "自制")
+    .filter((item) => item.category === "减脂餐")
     .sort((a, b) => a.minutes - b.minutes);
+  const weeklyRecipes = uniqueById(featured.concat(rotateForWeek(fallback, date, 2))).slice(0, 8);
 
-  return fillToCount(curated, fallback, 4).map(toRecipeCard);
+  return weeklyRecipes.map((recipe, index) => toRecipeCard(recipe, MEAL_LABELS[index]));
+}
+
+function buildCategoryRecipes(recipes, category, count, date) {
+  const pool = recipes
+    .filter((item) => item.category === category)
+    .sort((a, b) => a.minutes - b.minutes);
+  return rotateForWeek(pool, date, 5).slice(0, count).map((recipe) => toRecipeCard(recipe));
 }
 
 function buildLandingSections(recipes, date) {
   const currentDate = date || new Date();
-  const season = detectSeason(currentDate);
-
   return {
-    season: {
-      key: season.key,
-      title: season.title,
-      subtitle: season.subtitle,
-      headline: season.headline,
-      description: season.description,
+    plan: {
+      title: "一周减脂餐",
+      subtitle: "周一到周日，另备一套替换餐",
+      headline: "这周吃什么，减脂菜单帮你搭好了",
+      description: "周一到周日每天一套，另备 1 套替换餐。选中想吃的菜，就能自动生成采购清单。",
     },
-    dayKey: getRecommendationDayKey(currentDate),
-    seasonalRecipes: buildSeasonalRecipes(recipes, season, currentDate),
-    soupRecipes: buildCategoryRecipes(recipes, season, "汤粥", 2, currentDate),
-    dessertRecipes: buildCategoryRecipes(recipes, season, "甜品", 2, currentDate),
-    hotRecipes: buildHotRecipes(recipes, season),
+    weekKey: getRecommendationWeekKey(currentDate),
+    fatLossRecipes: buildFatLossRecipes(recipes, currentDate),
+    soupRecipes: buildCategoryRecipes(recipes, "汤粥", 2, currentDate),
   };
 }
 
 module.exports = {
   buildLandingSections,
-  detectSeason,
-  getRecommendationDayKey,
+  getRecommendationWeekKey,
 };

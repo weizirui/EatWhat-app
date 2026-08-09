@@ -77,6 +77,12 @@ function getCloudErrorText(error, functionName) {
 
 Page({
   data: {
+    launchEntry: false,
+    isOnboarding: false,
+    returnPage: "",
+    setupCompleted: false,
+    contactName: "",
+    defaultRemark: "",
     ordersCount: 0,
     recentOrders: [],
     inviteCode: "",
@@ -94,14 +100,38 @@ Page({
     collabDisplayName: "",
   },
 
+  onLoad(options) {
+    const source = options && options.source ? options.source : "launch";
+    this.setData({
+      launchEntry: source === "launch" || source === "setup",
+      returnPage: options && options.return ? options.return : "",
+    });
+  },
+
   /**
    * 刷新本机订单和在线协作状态。
    * @returns {void}
    */
   onShow() {
     const settings = store.getSettings();
+    const setupCompleted = store.isSetupCompleted(settings);
+    const isOnboarding = this.data.launchEntry && !setupCompleted;
+
+    if (this.data.launchEntry && setupCompleted) {
+      if (this.data.returnPage === "match") {
+        wx.navigateBack({ delta: 1 });
+      } else {
+        wx.reLaunch({ url: "/pages/landing/index" });
+      }
+      return;
+    }
+
     const orders = store.getOrders();
     this.setData({
+      isOnboarding,
+      setupCompleted,
+      contactName: settings.contactName || "",
+      defaultRemark: settings.defaultRemark || "",
       ordersCount: orders.length,
       recentOrders: orders.slice(0, 6).map((order) => ({
         id: order.id,
@@ -115,6 +145,78 @@ Page({
       collabDisplayName: settings.collabDisplayName || "",
     });
     this.loadCollaborators();
+  },
+
+  updateContactName(event) {
+    const contactName = String(event.detail.value || "").slice(0, 12);
+    this.setData({
+      contactName,
+      collabDisplayName: this.data.isOnboarding ? contactName : this.data.collabDisplayName,
+    });
+  },
+
+  updateDefaultRemark(event) {
+    this.setData({
+      defaultRemark: String(event.detail.value || "").slice(0, 40),
+    });
+  },
+
+  continueAfterSetup() {
+    if (this.data.returnPage === "match") {
+      wx.navigateBack({ delta: 1 });
+      return;
+    }
+    wx.reLaunch({
+      url: "/pages/landing/index",
+    });
+  },
+
+  saveBasicSettings() {
+    const contactName = String(this.data.contactName || "").trim();
+    if (!contactName) {
+      wx.showToast({
+        title: "请先填写称呼",
+        icon: "none",
+      });
+      return;
+    }
+    if (!this.data.defaultReceiverOpenid) {
+      wx.showToast({
+        title: "请先绑定并选择采购人",
+        icon: "none",
+      });
+      return;
+    }
+
+    const currentSettings = store.getSettings();
+    const collabDisplayName = String(currentSettings.collabDisplayName || "").trim() || contactName;
+    store.updateSettings({
+      setupCompleted: true,
+      contactName,
+      defaultRemark: String(this.data.defaultRemark || "").trim(),
+      collabDisplayName,
+      defaultReceiverOpenid: this.data.defaultReceiverOpenid,
+    });
+    this.setData({
+      setupCompleted: true,
+      collabDisplayName,
+    });
+    wx.showToast({
+      title: "设置已保存",
+      icon: "success",
+    });
+
+    if (this.data.isOnboarding) {
+      this.continueAfterSetup();
+    }
+  },
+
+  skipSetup() {
+    wx.showToast({
+      title: "未设置时仅可浏览",
+      icon: "none",
+    });
+    this.continueAfterSetup();
   },
 
   /**

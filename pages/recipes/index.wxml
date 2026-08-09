@@ -4,7 +4,7 @@
       wx:if="{{item.hasImage && !item.imageFailed}}"
       class="recipe-hero-image"
       src="{{item.image}}"
-      mode="aspectFit"
+      mode="aspectFill"
       data-id="{{item.id}}"
       binderror="handleRecipeImageError"
     />

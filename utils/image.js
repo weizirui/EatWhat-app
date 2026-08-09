@@ -5,6 +5,9 @@ const {
 } = require("./image-config");
 
 const tempUrlCache = Object.create(null);
+const preloadedImageCache = Object.create(null);
+const CLOUD_URL_BATCH_SIZE = 40;
+const LOCAL_RECIPE_IMAGE_OVERRIDES = new Set(["chicken-soup"]);
 
 function buildImageUrl(type, id) {
   if (!id) {
@@ -33,6 +36,9 @@ function ingredientImage(id) {
 }
 
 function recipeImage(id) {
+  if (LOCAL_RECIPE_IMAGE_OVERRIDES.has(id)) {
+    return `/public/food/recipes/${id}.jpg`;
+  }
   return buildImageUrl("recipes", id);
 }
 
@@ -58,7 +64,7 @@ function getResolvedImageUrl(url) {
   if (!isCloudFileId(url)) {
     return url || "";
   }
-  return tempUrlCache[url] || "";
+  return preloadedImageCache[url] || tempUrlCache[url] || "";
 }
 
 /**
@@ -69,6 +75,7 @@ function getResolvedImageUrl(url) {
 function clearResolvedImageUrl(url) {
   if (isCloudFileId(url)) {
     delete tempUrlCache[url];
+    delete preloadedImageCache[url];
   }
 }
 
@@ -89,28 +96,10 @@ function fallbackImageAfterError(item) {
   });
 }
 
-function resolveCloudImageUrls(urls) {
-  const cloudUrls = unique(urls).filter(isCloudFileId);
-  if (cloudUrls.length === 0) {
-    return Promise.resolve({});
-  }
-
-  const unresolved = cloudUrls.filter((url) => !tempUrlCache[url]);
-  if (unresolved.length === 0) {
-    const cachedMap = {};
-    cloudUrls.forEach((url) => {
-      cachedMap[url] = tempUrlCache[url] || "";
-    });
-    return Promise.resolve(cachedMap);
-  }
-
-  if (!wx.cloud || typeof wx.cloud.getTempFileURL !== "function") {
-    return Promise.resolve({});
-  }
-
+function resolveCloudImageBatch(urls) {
   return new Promise((resolve) => {
     wx.cloud.getTempFileURL({
-      fileList: unresolved,
+      fileList: urls,
       success(res) {
         const fileList = Array.isArray(res && res.fileList) ? res.fileList : [];
         fileList.forEach((item) => {
@@ -124,26 +113,92 @@ function resolveCloudImageUrls(urls) {
         const failedFiles = fileList
           .filter((item) => !(item.tempFileURL || item.tempFileUrl))
           .map((item) => `${item.fileID || item.fileId || "unknown"}:${item.status || item.errMsg || "unknown"}`);
-        if (failedFiles.length || fileList.length !== unresolved.length) {
+        if (failedFiles.length || fileList.length !== urls.length) {
           console.warn("[image] 云图片解析结果不完整", {
-            requested: unresolved,
+            requested: urls,
             returned: fileList,
             failed: failedFiles,
           });
         }
-
-        const result = {};
-        cloudUrls.forEach((url) => {
-          result[url] = tempUrlCache[url] || "";
-        });
-        resolve(result);
+        resolve();
       },
       fail(error) {
         console.warn("[image] getTempFileURL 失败", error);
-        resolve({});
+        resolve();
       },
     });
   });
+}
+
+async function resolveCloudImageUrls(urls) {
+  const cloudUrls = unique(urls).filter(isCloudFileId);
+  if (cloudUrls.length === 0) {
+    return {};
+  }
+
+  const unresolved = cloudUrls.filter((url) => !tempUrlCache[url]);
+  if (
+    unresolved.length > 0
+    && wx.cloud
+    && typeof wx.cloud.getTempFileURL === "function"
+  ) {
+    const tasks = [];
+    for (let index = 0; index < unresolved.length; index += CLOUD_URL_BATCH_SIZE) {
+      tasks.push(resolveCloudImageBatch(unresolved.slice(index, index + CLOUD_URL_BATCH_SIZE)));
+    }
+    await Promise.all(tasks);
+  }
+
+  const result = {};
+  cloudUrls.forEach((url) => {
+    result[url] = getResolvedImageUrl(url);
+  });
+  return result;
+}
+
+/**
+ * 在后台下载图片到本次小程序会话的临时缓存，后续 image 组件可直接使用本地路径。
+ * @param {string[]} urls 原始云文件 ID 列表。
+ * @param {{ concurrency?: number }} options 预加载并发配置。
+ * @returns {Promise<{ requested: number, loaded: number }>} 预加载统计。
+ */
+async function preloadImageUrls(urls, options) {
+  const cloudUrls = unique(urls).filter(isCloudFileId);
+  if (cloudUrls.length === 0 || typeof wx.getImageInfo !== "function") {
+    return { requested: cloudUrls.length, loaded: 0 };
+  }
+
+  await resolveCloudImageUrls(cloudUrls);
+  const pendingUrls = cloudUrls.filter((url) => tempUrlCache[url] && !preloadedImageCache[url]);
+  const concurrency = Math.max(1, Math.min(Number(options && options.concurrency) || 4, 6));
+  let cursor = 0;
+  let loaded = cloudUrls.length - pendingUrls.length;
+
+  async function worker() {
+    while (cursor < pendingUrls.length) {
+      const url = pendingUrls[cursor];
+      cursor += 1;
+      await new Promise((resolve) => {
+        wx.getImageInfo({
+          src: tempUrlCache[url],
+          success(res) {
+            const localPath = res && (res.path || res.tempFilePath);
+            if (localPath) {
+              preloadedImageCache[url] = localPath;
+              loaded += 1;
+            }
+            resolve();
+          },
+          fail() {
+            resolve();
+          },
+        });
+      });
+    }
+  }
+
+  await Promise.all(Array.from({ length: Math.min(concurrency, pendingUrls.length) }, worker));
+  return { requested: cloudUrls.length, loaded };
 }
 
 function hydrateImageList(list, imageField) {
@@ -181,5 +236,6 @@ module.exports = {
   clearResolvedImageUrl,
   fallbackImageAfterError,
   resolveCloudImageUrls,
+  preloadImageUrls,
   hydrateImageList,
 };
