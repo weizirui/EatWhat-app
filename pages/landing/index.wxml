@@ -119,31 +119,31 @@
       <view class="section-title">常吃菜</view>
       <text class="muted">家里常做的，一键再加</text>
     </view>
-    <view class="pu-grid-list">
+    <view class="pu-frequent-grid">
       <view
         wx:for="{{frequentRecipes}}"
         wx:key="id"
-        class="pu-grid-card pu-season-card"
+        class="pu-frequent-card"
+        hover-class="pu-frequent-card-pressed"
         data-id="{{item.id}}"
         bindtap="pickFrequent"
       >
         <image
           wx:if="{{item.hasImage && !item.imageFailed}}"
-          class="pu-grid-image"
+          class="pu-frequent-image"
           src="{{item.image}}"
-          mode="aspectFit"
+          mode="aspectFill"
           data-id="{{item.id}}"
           binderror="handleFrequentImageError"
         />
-        <view wx:else class="pu-grid-image pu-image-fallback">
+        <view wx:else class="pu-frequent-image pu-image-fallback">
           <view class="pu-image-fallback-emoji">{{item.emoji}}</view>
-          <view class="pu-image-fallback-copy">{{item.title}}</view>
         </view>
-        <view class="pu-grid-body">
-          <view class="pu-grid-title">{{item.title}}</view>
-          <view class="pu-grid-sub">{{item.subtitle}}</view>
-          <view class="pu-grid-cta">一键加入</view>
+        <view class="pu-frequent-copy">
+          <view class="pu-frequent-title">{{item.title}}</view>
+          <view class="pu-frequent-meta">{{item.subtitle}}</view>
         </view>
+        <view class="pu-frequent-add" aria-label="加入采购清单">+</view>
       </view>
     </view>
   </view>

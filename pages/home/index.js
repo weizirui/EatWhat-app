@@ -55,6 +55,11 @@ Page({
     cartOpen: false,
     cartSheetClass: "cart-sheet",
     selectedPreviewText: "",
+    favoriteCount: 0,
+    favoritesFilterClass: "favorites-filter",
+    favoritesFilterIcon: "♡",
+    favoritesFilterText: "我的收藏",
+    isFavoritesView: false,
   },
 
   onLoad() {
@@ -70,7 +75,6 @@ Page({
       }
     });
     const categories = Array.from(categoryMap.values());
-    categories.push({ id: "favorites", name: "收藏", emoji: "⭐", sort: categories.length });
     this.setData({
       activeCategory: categories[0] ? categories[0].id : "",
       activeCategoryIndex: 0,
@@ -116,13 +120,24 @@ Page({
       })
       .map((item) => {
         const active = selectedRecipeIds.includes(item.id);
+        const favorited = favoriteIds.includes(item.id);
         return {
           ...item,
           active,
+          favorited,
           className: active
             ? "ingredient-card ingredient-card-active"
             : "ingredient-card",
           stateText: active ? "已加入" : "点我加入",
+          stateIcon: active ? "✓" : "+",
+          stateClass: active
+            ? "ingredient-action ingredient-action-add ingredient-action-active"
+            : "ingredient-action ingredient-action-add",
+          favoriteText: favorited ? "已收藏" : "收藏",
+          favoriteIcon: favorited ? "♥" : "♡",
+          favoriteClass: favorited
+            ? "ingredient-action ingredient-action-favorite ingredient-action-favorite-active"
+            : "ingredient-action ingredient-action-favorite",
           ingredientSummary: getIngredientsByIds(item.ingredient_ids || [])
             .slice(0, 3)
             .map((ingredient) => ingredient.name)
@@ -166,9 +181,18 @@ Page({
       totalIngredientCount: plan.ingredients.length,
       selectedPreviewText,
       recipes,
+      favoriteCount: favoriteIds.length,
+      favoritesFilterClass: isFavorites
+        ? "favorites-filter favorites-filter-active"
+        : "favorites-filter",
+      favoritesFilterIcon: isFavorites ? "←" : "♡",
+      favoritesFilterText: isFavorites ? "返回原分类" : "我的收藏",
+      isFavoritesView: isFavorites,
       resultHint: searchQuery
         ? `共找到 ${recipes.length} 道和“${this.data.searchQuery}”相关的菜谱`
-        : `${categories.find((item) => item.id === activeCategory)?.name || "当前分类"} · ${recipes.length} 道菜`,
+        : isFavorites
+          ? `我的收藏 · ${recipes.length} 道菜`
+          : `${categories.find((item) => item.id === activeCategory)?.name || "当前分类"} · ${recipes.length} 道菜`,
       cartSheetClass: this.data.cartOpen ? "cart-sheet cart-sheet-open" : "cart-sheet",
     });
 
@@ -207,6 +231,67 @@ Page({
     const { id } = event.currentTarget.dataset;
     store.togglePickedRecipe(id);
     this.refresh();
+  },
+
+  toggleFavorite(event) {
+    const { id } = event.currentTarget.dataset;
+    if (!id) {
+      return;
+    }
+    const favorited = store.toggleFavoriteRecipe(id).includes(id);
+    this.refresh();
+    wx.showToast({
+      title: favorited ? "已收藏" : "已取消收藏",
+      icon: "none",
+    });
+  },
+
+  showFavorites() {
+    if (this.data.isFavoritesView) {
+      const previous = this._browseState || {};
+      const fallbackCategory = this.data.categories[0] || {};
+      this.setData({
+        activeCategory: previous.activeCategory || fallbackCategory.id || "",
+        activeCategoryIndex: Number(previous.activeCategoryIndex || 0),
+        activeCategoryName: previous.activeCategoryName || fallbackCategory.name || "请选择分类",
+        searchQuery: previous.searchQuery || "",
+      });
+      this.refresh();
+      const restoreScroll = () => {
+        if (typeof wx.pageScrollTo === "function") {
+          wx.pageScrollTo({
+            scrollTop: Number(previous.scrollTop || 0),
+            duration: 0,
+          });
+        }
+      };
+      if (typeof wx.nextTick === "function") {
+        wx.nextTick(restoreScroll);
+      } else {
+        restoreScroll();
+      }
+      return;
+    }
+
+    this._browseState = {
+      activeCategory: this.data.activeCategory,
+      activeCategoryIndex: this.data.activeCategoryIndex,
+      activeCategoryName: this.data.activeCategoryName,
+      searchQuery: this.data.searchQuery,
+      scrollTop: Number(this._browseScrollTop || 0),
+    };
+    this.setData({
+      activeCategory: "favorites",
+      activeCategoryName: "我的收藏",
+      searchQuery: "",
+    });
+    this.refresh();
+  },
+
+  onPageScroll(event) {
+    if (!this.data.isFavoritesView) {
+      this._browseScrollTop = Number(event && event.scrollTop || 0);
+    }
   },
 
   toggleCart() {

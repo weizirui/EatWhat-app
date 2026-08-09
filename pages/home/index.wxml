@@ -6,7 +6,6 @@
         <view class="market-title">选菜谱，自动出食材</view>
       </view>
       <view class="market-hero-links">
-        <text class="muted mini-link" bindtap="goPlan">本周菜单</text>
         <text class="muted mini-link" bindtap="goSettings">设置</text>
       </view>
     </view>
@@ -24,12 +23,23 @@
     </view>
   </view>
 
+  <view class="week-plan-entry" hover-class="week-plan-entry-pressed" bindtap="goPlan">
+    <view class="week-plan-entry-copy">
+      <view class="week-plan-entry-kicker">一周三餐</view>
+      <view class="week-plan-entry-title">还不知道吃什么？</view>
+      <view class="week-plan-entry-sub">点我自动生成一周菜单</view>
+    </view>
+    <view class="week-plan-entry-action" aria-label="进入本周菜单">›</view>
+  </view>
+
   <view class="section">
     <view class="category-heading">
       <view>
         <view class="section-title">菜谱分类</view>
         <view class="category-result">{{resultHint}}</view>
       </view>
+    </view>
+    <view class="category-controls">
       <picker
         class="category-picker-wrap"
         mode="selector"
@@ -43,6 +53,11 @@
           <text class="category-picker-arrow">⌄</text>
         </view>
       </picker>
+      <view class="{{favoritesFilterClass}}" hover-class="favorites-filter-pressed" bindtap="showFavorites">
+        <text class="favorites-filter-icon">{{favoritesFilterIcon}}</text>
+        <text class="favorites-filter-text">{{favoritesFilterText}}</text>
+        <text class="favorites-filter-count" wx:if="{{!isFavoritesView}}">{{favoriteCount}}</text>
+      </view>
     </view>
   </view>
 
@@ -71,8 +86,22 @@
       </view>
       <view class="ingredient-category">{{item.categoryName}} · {{item.minutes}} 分钟 · {{item.difficulty}}</view>
       <view class="ingredient-category" wx:if="{{item.ingredientSummary}}">主食材：{{item.ingredientSummary}}</view>
-      <view class="ingredient-state">{{item.stateText}}</view>
+      <view class="ingredient-actions">
+        <view class="{{item.stateClass}}" data-id="{{item.id}}" catchtap="toggleRecipe">
+          <text class="ingredient-action-icon">{{item.stateIcon}}</text>
+          <text class="ingredient-action-label">{{item.stateText}}</text>
+        </view>
+        <view class="{{item.favoriteClass}}" data-id="{{item.id}}" catchtap="toggleFavorite">
+          <text class="ingredient-action-icon">{{item.favoriteIcon}}</text>
+          <text class="ingredient-action-label">{{item.favoriteText}}</text>
+        </view>
+      </view>
     </view>
+  </view>
+
+  <view class="favorites-empty" wx:if="{{isFavoritesView && !recipes.length}}">
+    <view class="favorites-empty-title">还没有收藏菜品</view>
+    <view class="favorites-empty-copy">收藏喜欢的菜后，会集中显示在这里。</view>
   </view>
 
   <view class="bottom-space"></view>

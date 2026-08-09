@@ -197,6 +197,77 @@
   font-size: 22rpx;
 }
 
+.pu-frequent-grid {
+  margin-top: 18rpx;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.pu-frequent-card {
+  width: calc(50% - 6rpx);
+  min-height: 112rpx;
+  padding: 8rpx 10rpx 8rpx 8rpx;
+  border: 2rpx solid rgba(47, 74, 58, 0.07);
+  border-radius: 14rpx;
+  background: #f8fbf8;
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.pu-frequent-card-pressed {
+  background: #edf7f0;
+  border-color: rgba(35, 163, 86, 0.2);
+}
+
+.pu-frequent-image {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 10rpx;
+  flex-shrink: 0;
+}
+
+.pu-frequent-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.pu-frequent-title {
+  color: #183426;
+  font-size: 22rpx;
+  font-weight: 700;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pu-frequent-meta {
+  margin-top: 5rpx;
+  color: #829087;
+  font-size: 18rpx;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pu-frequent-add {
+  width: 38rpx;
+  height: 38rpx;
+  border-radius: 50%;
+  background: #23a356;
+  color: #ffffff;
+  font-size: 28rpx;
+  line-height: 35rpx;
+  text-align: center;
+  flex-shrink: 0;
+}
+
 .pu-settings-fab {
   position: fixed;
   left: 24rpx;

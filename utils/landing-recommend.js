@@ -10,6 +10,35 @@ const FEATURED_FAT_LOSS_IDS = [
   "fatloss-sweet-potato-chicken-bowl",
 ];
 
+const SEASON_RULES = [
+  {
+    months: [3, 4, 5],
+    ingredientIds: ["bamboo_shoot", "spinach", "tofu", "cucumber"],
+    preferredCategories: ["减脂餐", "蔬菜", "豆制品"],
+  },
+  {
+    months: [6, 7, 8],
+    ingredientIds: ["tomato", "cucumber", "loofah", "bitter_melon", "winter_melon"],
+    preferredCategories: ["减脂餐", "蔬菜", "汤粥", "海鲜"],
+  },
+  {
+    months: [9, 10, 11],
+    ingredientIds: ["lotus_root", "taro", "pumpkin", "shiitake", "crab"],
+    preferredCategories: ["蔬菜", "肉禽", "汤粥", "海鲜"],
+  },
+  {
+    months: [12, 1, 2],
+    ingredientIds: ["cabbage", "ribs", "beef", "sweet_potato", "seaweed"],
+    preferredCategories: ["肉禽", "汤粥", "海鲜"],
+  },
+];
+
+function detectSeason(date) {
+  const current = date || new Date();
+  const month = current.getMonth() + 1;
+  return SEASON_RULES.find((item) => item.months.includes(month)) || SEASON_RULES[1];
+}
+
 function uniqueById(list) {
   const seen = new Set();
   return list.filter((item) => {
@@ -107,5 +136,6 @@ function buildLandingSections(recipes, date) {
 
 module.exports = {
   buildLandingSections,
+  detectSeason,
   getRecommendationWeekKey,
 };

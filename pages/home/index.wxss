@@ -67,11 +67,72 @@
   gap: 24rpx;
 }
 
+.week-plan-entry {
+  min-height: 140rpx;
+  margin-top: 20rpx;
+  padding: 22rpx 22rpx 22rpx 24rpx;
+  border: 2rpx solid rgba(35, 163, 86, 0.14);
+  border-radius: 16rpx;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  box-sizing: border-box;
+  box-shadow: 0 8rpx 22rpx rgba(47, 74, 58, 0.05);
+}
+
+.week-plan-entry-pressed {
+  background: #f1f8f3;
+}
+
+.week-plan-entry-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.week-plan-entry-kicker {
+  color: #23a356;
+  font-size: 20rpx;
+  font-weight: 700;
+}
+
+.week-plan-entry-title {
+  margin-top: 6rpx;
+  color: #183426;
+  font-size: 28rpx;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.week-plan-entry-sub {
+  margin-top: 5rpx;
+  color: #718077;
+  font-size: 22rpx;
+}
+
+.week-plan-entry-action {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background: #23a356;
+  color: #ffffff;
+  font-size: 42rpx;
+  line-height: 58rpx;
+  text-align: center;
+  flex-shrink: 0;
+}
+
 .category-heading {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 20rpx;
+}
+
+.category-controls {
+  margin-top: 18rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
 }
 
 .category-result {
@@ -81,11 +142,12 @@
 }
 
 .category-picker-wrap {
-  flex-shrink: 0;
+  flex: 1;
+  min-width: 0;
 }
 
 .category-picker {
-  width: 240rpx;
+  width: 100%;
   height: 76rpx;
   padding: 0 18rpx 0 22rpx;
   border: 2rpx solid rgba(35, 163, 86, 0.16);
@@ -115,6 +177,50 @@
   flex-shrink: 0;
 }
 
+.favorites-filter {
+  width: 220rpx;
+  height: 76rpx;
+  padding: 0 14rpx;
+  border: 2rpx solid rgba(47, 74, 58, 0.09);
+  border-radius: 16rpx;
+  background: #ffffff;
+  color: #516359;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.favorites-filter-active {
+  border-color: rgba(35, 163, 86, 0.28);
+  background: #edf8f0;
+  color: #1f8549;
+}
+
+.favorites-filter-pressed {
+  background: #e5f3e9;
+}
+
+.favorites-filter-icon {
+  font-size: 28rpx;
+  line-height: 1;
+}
+
+.favorites-filter-text {
+  font-size: 23rpx;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.favorites-filter-count {
+  min-width: 30rpx;
+  color: #7a887f;
+  font-size: 20rpx;
+  text-align: center;
+}
+
 .ingredient-grid {
   margin-top: 24rpx;
   display: flex;
@@ -132,6 +238,8 @@
   border: 2rpx solid rgba(47, 74, 58, 0.06);
   overflow: hidden;
   box-shadow: 0 10rpx 26rpx rgba(47, 74, 58, 0.06);
+  display: flex;
+  flex-direction: column;
 }
 
 .ingredient-card-active {
@@ -202,12 +310,89 @@
   font-size: 20rpx;
 }
 
-.ingredient-state {
-  margin-top: 18rpx;
-  padding: 0 18rpx;
-  color: #23a356;
-  font-size: 24rpx;
-  font-weight: 600;
+.ingredient-actions {
+  margin-top: auto;
+  padding: 18rpx 18rpx 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  box-sizing: border-box;
+}
+
+.ingredient-action {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 54rpx;
+  padding: 0 6rpx;
+  border-radius: 12rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 4rpx;
+  box-sizing: border-box;
+  font-size: 19rpx;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.ingredient-action-add {
+  background: #edf8f0;
+  color: #20894c;
+}
+
+.ingredient-action-active {
+  background: #23a356;
+  color: #ffffff;
+}
+
+.ingredient-action-favorite {
+  border: 2rpx solid rgba(47, 74, 58, 0.09);
+  background: #ffffff;
+  color: #69786f;
+}
+
+.ingredient-action-favorite-active {
+  border-color: rgba(194, 79, 78, 0.18);
+  background: #fff2f1;
+  color: #b94d4d;
+}
+
+.ingredient-action-icon {
+  font-size: 22rpx;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.ingredient-action-label {
+  min-width: 0;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+.favorites-empty {
+  margin-top: 24rpx;
+  padding: 48rpx 24rpx;
+  border: 2rpx dashed rgba(47, 74, 58, 0.12);
+  border-radius: 16rpx;
+  background: rgba(255, 255, 255, 0.62);
+  text-align: center;
+}
+
+.favorites-empty-title {
+  color: #2f4a3a;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.favorites-empty-copy {
+  margin-top: 10rpx;
+  color: #7a887f;
+  font-size: 22rpx;
 }
 
 .cart-mask {

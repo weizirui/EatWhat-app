@@ -48,10 +48,10 @@ exports.main = async (event) => {
   const { OPENID } = cloud.getWXContext();
   const orderId = String(event && event.orderId ? event.orderId : "").trim();
   const receiverOpenid = String(event && event.receiverOpenid ? event.receiverOpenid : "").trim();
-  const recipeIds = normalizeStringList(event && event.recipeIds, 30);
-  const ingredientIds = normalizeStringList(event && event.ingredientIds, 80);
-  const recipeNames = normalizeStringList(event && event.recipeNames, 30);
-  const ingredientNames = normalizeStringList(event && event.ingredientNames, 80);
+  const recipeIds = normalizeStringList(event && event.recipeIds, 60);
+  const ingredientIds = normalizeStringList(event && event.ingredientIds, 160);
+  const recipeNames = normalizeStringList(event && event.recipeNames, 60);
+  const ingredientNames = normalizeStringList(event && event.ingredientNames, 160);
 
   if (!orderId || !recipeIds.length) {
     return { ok: false, reason: "invalid_order" };

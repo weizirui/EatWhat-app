@@ -1,26 +1,44 @@
 <view class="page plan-page">
-  <view class="plan-hero card">
-    <view class="plan-hero-title">本周菜单</view>
-    <view class="plan-hero-sub">自动荤素搭配，一周不重样。点开某天可看菜谱，一键加入采购清单。</view>
+  <view class="plan-hero">
+    <view class="plan-hero-kicker">未来 7 天</view>
+    <view class="plan-hero-title">一周三餐菜单</view>
+    <view class="plan-hero-sub">{{dateRangeText}} · 早餐、午餐、晚餐已搭配</view>
+    <view class="plan-hero-meta">共 {{totalRecipeCount}} 道不重复菜谱，海鲜与肉类交替安排</view>
+    <view class="plan-hero-actions">
+      <button class="plan-week-btn" hover-class="plan-week-btn-pressed" bindtap="addWeekAndGo">生成整周采购清单</button>
+      <button class="plan-refresh-btn" aria-label="换一套菜单" hover-class="plan-refresh-btn-pressed" bindtap="regeneratePlan">↻</button>
+    </view>
   </view>
 
   <view wx:if="{{loading}}" class="plan-state">周菜单生成中...</view>
 
-  <view wx:for="{{days}}" wx:key="index" class="plan-day card">
+  <view wx:for="{{days}}" wx:key="id" class="{{item.className}}">
     <view class="plan-day-head" data-index="{{index}}" bindtap="toggleDay">
-      <view>
+      <view class="plan-day-date-block">
         <view class="plan-day-weekday">{{item.weekday}}</view>
         <view class="plan-day-date">{{item.dateText}}</view>
       </view>
-      <view class="plan-day-summary">{{item.recipes.length}} 道菜 · {{item.ingredientCount}} 项食材</view>
+      <view class="plan-day-summary">
+        <view>{{item.recipes.length}} 道菜</view>
+        <view class="plan-day-ingredients">{{item.ingredientCount}} 项食材</view>
+      </view>
+      <text class="plan-day-arrow">{{item.open ? '⌃' : '⌄'}}</text>
     </view>
 
-    <view wx:if="{{item.open}}">
-      <view class="plan-recipe-list">
-        <view wx:for="{{item.recipes}}" wx:for-item="recipe" wx:key="id" class="plan-recipe-row">
-          <text class="plan-recipe-emoji">{{recipe.emoji}}</text>
-          <text class="plan-recipe-title">{{recipe.title}}</text>
-          <text class="plan-recipe-meta">{{recipe.category}} · {{recipe.minutes}} 分钟</text>
+    <view wx:if="{{item.open}}" class="plan-day-body">
+      <view wx:for="{{item.meals}}" wx:for-item="meal" wx:key="id" class="plan-meal">
+        <view class="plan-meal-head">
+          <view class="plan-meal-name">{{meal.name}}</view>
+          <view class="plan-meal-hint">{{meal.hint}}</view>
+        </view>
+        <view class="plan-recipe-list">
+          <view wx:for="{{meal.recipes}}" wx:for-item="recipe" wx:key="id" class="plan-recipe-row">
+            <text class="plan-recipe-emoji">{{recipe.emoji}}</text>
+            <view class="plan-recipe-copy">
+              <view class="plan-recipe-title">{{recipe.title}}</view>
+              <view class="plan-recipe-meta">{{recipe.category}} · {{recipe.minutes}} 分钟</view>
+            </view>
+          </view>
         </view>
       </view>
       <button class="plan-add-btn" data-index="{{index}}" bindtap="addDayAndGo">

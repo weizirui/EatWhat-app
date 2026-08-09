@@ -228,7 +228,7 @@ Page({
     store.addPickedRecipes([id]);
     this.refreshUserState();
     wx.showToast({
-      title: "已加入今晚的菜",
+      title: "已加入采购清单",
       icon: "none",
     });
   },
