@@ -132,6 +132,17 @@
 
 .pu-soup-card {
   background: #f1f7fb;
+  min-height: 0;
+}
+
+.pu-soup-card .pu-grid-body {
+  flex: none;
+  min-height: 0;
+  padding: 16rpx 16rpx 18rpx;
+}
+
+.pu-soup-card .pu-grid-title {
+  min-height: 0;
 }
 
 .pu-grid-image {

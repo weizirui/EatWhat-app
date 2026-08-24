@@ -364,7 +364,7 @@
 }
 
 .match-bottom-space {
-  height: 220rpx;
+  height: 330rpx;
 }
 
 .match-fab {
@@ -373,7 +373,8 @@
   right: 24rpx;
   bottom: 24rpx;
   z-index: 30;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14rpx;
   padding: 14rpx;
   border-radius: 28rpx;
@@ -383,8 +384,20 @@
   box-sizing: border-box;
 }
 
+.match-fab > button {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding-left: 8rpx;
+  padding-right: 8rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .match-fab-info {
-  flex: 0 0 220rpx;
+  grid-column: auto;
   height: 92rpx;
   border-radius: 22rpx;
   background: #f6faf7;
@@ -403,7 +416,7 @@
 }
 
 .match-fab-kf {
-  flex: 0 0 160rpx;
+  grid-column: auto;
   height: 92rpx;
   border-radius: 22rpx;
   background: #ffffff;
@@ -427,7 +440,8 @@
 }
 
 .match-fab-submit {
-  flex: 1;
+  grid-column: 1 / -1;
+  width: 100%;
   height: 92rpx;
   line-height: 92rpx;
   border-radius: 22rpx;
