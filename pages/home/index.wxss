@@ -32,6 +32,46 @@
   line-height: 1.7;
 }
 
+.market-flow {
+  margin-top: 18rpx;
+  display: flex;
+  gap: 10rpx;
+}
+
+.market-flow-step {
+  flex: 1;
+  min-width: 0;
+  height: 58rpx;
+  padding: 0 10rpx;
+  border-radius: 14rpx;
+  background: #f3f8f4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  box-sizing: border-box;
+}
+
+.market-flow-index {
+  width: 30rpx;
+  height: 30rpx;
+  line-height: 30rpx;
+  border-radius: 50%;
+  background: #23a356;
+  color: #ffffff;
+  font-size: 20rpx;
+  font-weight: 700;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.market-flow-text {
+  color: #2f4a3a;
+  font-size: 22rpx;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 .market-search {
   height: 84rpx;
   border-radius: 999rpx;

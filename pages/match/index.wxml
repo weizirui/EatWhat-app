@@ -1,8 +1,8 @@
 <view class="page match-page">
   <view wx:if="{{isShared}}" class="share-banner">这是朋友分享的采购清单，可以直接认领采购。</view>
   <view class="card match-hero-card">
-    <view class="section-title">已选菜谱</view>
-    <view class="title">已经帮你汇总好需要采购的主食材</view>
+    <view class="section-title">给采购人的清单</view>
+    <view class="title">已整理好给采购人的食材</view>
     <view class="subtitle" wx:if="{{selectedRecipesText}}">今晚想做：{{selectedRecipesText}}</view>
     <view class="subtitle match-summary-line" wx:if="{{purchaseIngredientsText}}">待采购：{{purchaseIngredientsText}}</view>
     <view class="subtitle" wx:if="{{!selectedRecipesText}}">还没有已选菜谱，请返回上一页重新选择。</view>
@@ -29,8 +29,8 @@
 
   <view class="stack" wx:if="{{recipeCount || ingredientCount}}">
     <view class="card match-summary-card">
-      <view class="section-title">采购清单</view>
-      <view class="subtitle">共 {{ingredientCount}} 项主食材，对应 {{recipeCount}} 道菜。</view>
+      <view class="section-title">采购单</view>
+      <view class="subtitle">共 {{ingredientCount}} 项主食材，对应 {{recipeCount}} 道菜。确认无误后生成采购单。</view>
     </view>
 
     <view wx:for="{{purchaseIngredients}}" wx:key="id" class="recipe-card ingredient-card-row">
@@ -72,14 +72,14 @@
 
   <view class="section empty-card" wx:else>
     <view class="title empty-title">还没有菜谱</view>
-    <view class="subtitle">先回上一页挑几道菜，再来生成采购清单。</view>
+    <view class="subtitle">先回上一页挑几道菜，再来生成给采购人的采购单。</view>
   </view>
 
   <view class="match-bottom-space"></view>
 
   <view class="match-fab">
     <button wx:if="{{!isShared}}" class="btn-primary match-fab-submit" bindtap="submitOrder" disabled="{{submitting}}" loading="{{submitting}}">
-      {{submitting ? '提交中...' : '提交清单'}}
+      {{submitting ? '生成中...' : '生成采购单'}}
     </button>
   </view>
 </view>

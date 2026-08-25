@@ -13,7 +13,7 @@ assert.match(template, /wx:for="\{\{selectedRecipes\}\}"/);
 assert.match(template, /item\.ingredientText/);
 assert.match(template, /purchaseIngredientsText/);
 assert.match(template, /selectedRecipesText/);
-assert.match(template, /提交清单/);
+assert.match(template, /生成采购单/);
 
 assert.doesNotMatch(template, /pickedPanelClass/);
 assert.doesNotMatch(template, /activePickedDetail/);

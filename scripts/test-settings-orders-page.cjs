@@ -33,8 +33,8 @@ assert.match(successScript, /retryCollaboration/);
 assert.match(successScript, /submit_collab_order/);
 assert.match(successScript, /\["failed", "pending"\]/);
 assert.match(successTemplate, /重新发送协作清单/);
-assert.match(successTemplate, /订单概览/);
-assert.match(successTemplate, /订单标题/);
+assert.match(successTemplate, /采购单概览/);
+assert.match(successTemplate, /采购单标题/);
 assert.match(storeScript, /function getOrderById/);
 
 console.log("settings orders page tests passed");

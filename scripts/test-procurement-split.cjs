@@ -45,7 +45,8 @@ store.togglePickedRecipe("tomato-eggs");
 assert.deepEqual(toPlain(store.getPickedRecipes()), ["smashed-cucumber"]);
 
 const homeTemplate = fs.readFileSync(path.join(root, "pages/home/index.wxml"), "utf8");
-assert.match(homeTemplate, /选菜谱，自动出食材/);
+assert.match(homeTemplate, /点好菜，发给采购人/);
+assert.match(homeTemplate, /发给采购人/);
 assert.match(homeTemplate, /wx:for="\{\{recipes\}\}"/);
 assert.match(homeTemplate, /待采购食材/);
 

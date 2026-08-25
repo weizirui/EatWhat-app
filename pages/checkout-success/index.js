@@ -89,7 +89,7 @@ Page({
       isShared: sharedRecipeIds.length > 0,
     });
     wx.setNavigationBarTitle({
-      title: source === "settings" ? "订单详情" : "提交成功",
+      title: source === "settings" ? "订单详情" : "采购单",
     });
   },
 

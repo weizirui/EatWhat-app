@@ -3,10 +3,24 @@
     <view class="market-hero-top row-between">
       <view>
         <view class="market-eyebrow">今日菜市</view>
-        <view class="market-title">选菜谱，自动出食材</view>
+        <view class="market-title">点好菜，发给采购人</view>
       </view>
     </view>
-    <view class="market-subtitle">已选 {{selectedRecipeCount}} 道菜，自动汇总 {{totalIngredientCount}} 项主食材，支持搜索、分类和真实图片浏览。</view>
+    <view class="market-subtitle">你负责选想吃的菜，小程序自动整理食材清单和做法，提交后可一键发给采购人。</view>
+    <view class="market-flow">
+      <view class="market-flow-step">
+        <view class="market-flow-index">1</view>
+        <view class="market-flow-text">选菜</view>
+      </view>
+      <view class="market-flow-step">
+        <view class="market-flow-index">2</view>
+        <view class="market-flow-text">出食材</view>
+      </view>
+      <view class="market-flow-step">
+        <view class="market-flow-index">3</view>
+        <view class="market-flow-text">发给采购人</view>
+      </view>
+    </view>
     <view class="market-search">
       <text class="market-search-icon">⌕</text>
       <input
@@ -232,13 +246,13 @@
     <view class="fab-summary" bindtap="toggleCart">
       <view class="fab-count">{{totalIngredientCount}}</view>
       <view class="fab-copy">
-        <view class="fab-title">采购清单</view>
+        <view class="fab-title">采购单</view>
         <view class="fab-desc">{{selectedPreviewText}}</view>
       </view>
     </view>
     <button class="fab-primary fab-primary-soft" bindtap="goMatch">
-      <view class="fab-primary-title">生成食材</view>
-      <view class="fab-primary-sub">查看采购清单</view>
+      <view class="fab-primary-title">生成采购单</view>
+      <view class="fab-primary-sub">整理给采购人</view>
     </button>
   </view>
 </view>

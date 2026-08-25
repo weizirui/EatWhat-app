@@ -364,7 +364,7 @@ Page({
     this.setData({ submitting: true });
     store.saveOrder(order);
     wx.showToast({
-      title: "已保存到我的订单",
+      title: "采购单已生成",
       icon: "none",
     });
 
