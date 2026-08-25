@@ -1,5 +1,18 @@
-<view class="page recipes-page" wx:if="{{recipes.length}}">
-  <view wx:if="{{sharedSource}}" class="share-banner">来自朋友分享的菜谱，可查看完整做法。</view>
+<view class="page recipes-page" wx:if="{{allRecipes.length}}">
+  <view wx:if="{{sharedSource}}" class="share-banner">来自朋友分享的菜谱，可查看菜谱档案。</view>
+  <scroll-view class="recipe-filter-bar" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="recipe-filter-row">
+      <view
+        wx:for="{{filterTabs}}"
+        wx:key="id"
+        class="{{item.className}}"
+        data-category="{{item.id}}"
+        bindtap="changeCategory"
+      >
+        {{item.label}}
+      </view>
+    </view>
+  </scroll-view>
   <view wx:for="{{recipes}}" wx:key="id" class="recipe-detail">
     <image
       wx:if="{{item.hasImage && !item.imageFailed}}"
@@ -117,12 +130,11 @@
       <view class="tip-box">小贴士：{{item.tip}}</view>
     </view>
   </view>
-  <button class="share-recipe-btn" open-type="share">分享菜谱</button>
 </view>
 
 <view class="page recipes-page" wx:else>
   <view class="section empty-card">
     <view class="title empty-title">还没有可展示的菜谱</view>
-    <view class="subtitle">先去匹配页加入订单，提交后这里会直接展示完整做法。</view>
+    <view class="subtitle">先去匹配页加入订单，提交后这里会直接展示菜谱档案。</view>
   </view>
 </view>

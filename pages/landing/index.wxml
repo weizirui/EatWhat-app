@@ -175,7 +175,4 @@
     </view>
   </view>
 
-  <view class="pu-settings-fab" bindtap="goSettings">
-    <text class="pu-settings-icon">⚙</text>
-  </view>
 </view>

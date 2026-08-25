@@ -13,6 +13,19 @@ function formatTime(input) {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
+/**
+ * 生成订单展示标题。
+ * @param {Date|string|number} input 创建订单的时间。
+ * @returns {string} 适合页面展示的菜单标题。
+ */
+function formatOrderTitle(input) {
+  const d = input instanceof Date ? input : new Date(input);
+  if (Number.isNaN(d.getTime())) {
+    return "本次菜单";
+  }
+  return `${d.getMonth() + 1}月${d.getDate()}日 ${pad(d.getHours())}:${pad(d.getMinutes())} 菜单`;
+}
+
 function plusMinutes(base, minutes) {
   return new Date(base.getTime() + minutes * 60 * 1000);
 }
@@ -32,6 +45,7 @@ function formatDateTimePicker(input) {
 
 module.exports = {
   generateOrderId,
+  formatOrderTitle,
   formatTime,
   plusMinutes,
   formatDateTimeLocal,

@@ -1,5 +1,5 @@
 const store = require("../../utils/store");
-const { getRecipesByIds } = require("../../utils/catalog");
+const { getRecipesByIds, setExtraRecipes } = require("../../utils/catalog");
 const {
   recipeImage,
   hydrateImageList,
@@ -10,14 +10,14 @@ const { buildRecipeProfile } = require("../../utils/recipe-profile");
 const { generateRecipeImageIfMissing } = require("../../utils/ai-image");
 
 /**
- * 将菜谱转换为完整做法页的展示结构。
+ * 将菜谱转换为菜谱档案页的展示结构。
  * @param {object} recipe 原始菜谱。
  * @param {string[]} ownedIds 当前订单的全部食材 ID。
  * @returns {object} 可直接渲染的菜谱详情。
  */
 function serializeRecipe(recipe, ownedIds) {
   const profile = buildRecipeProfile(recipe, ownedIds);
-  const image = recipeImage(recipe.id);
+  const image = recipe.image || recipeImage(recipe.id);
   const canUseDirectly = Boolean(image) && !isCloudFileId(image);
   return {
     ...recipe,
@@ -44,12 +44,52 @@ function serializeRecipe(recipe, ownedIds) {
   };
 }
 
+function getTemporaryRecipes() {
+  return typeof store.getTemporaryRecipes === "function" ? store.getTemporaryRecipes() : [];
+}
+
+function syncTemporaryRecipes() {
+  if (typeof setExtraRecipes === "function") {
+    setExtraRecipes(getTemporaryRecipes());
+  }
+}
+
+function unique(list) {
+  return Array.from(new Set((list || []).filter(Boolean)));
+}
+
+function buildFilterTabs(recipes, activeCategory) {
+  const current = activeCategory || "all";
+  return [{
+    id: "all",
+    name: "全部",
+    count: recipes.length,
+  }].concat(unique(recipes.map((item) => item.category)).map((category) => ({
+    id: category,
+    name: category,
+    count: recipes.filter((item) => item.category === category).length,
+  }))).map((item) => Object.assign({}, item, {
+    className: item.id === current ? "recipe-filter recipe-filter-active" : "recipe-filter",
+    label: `${item.name} ${item.count}`,
+  }));
+}
+
+function filterRecipes(recipes, category) {
+  if (!category || category === "all") {
+    return recipes;
+  }
+  return recipes.filter((item) => item.category === category);
+}
+
 Page({
   data: {
     orderId: "",
     recipeIds: [],
     sharedSource: false,
     recipes: [],
+    allRecipes: [],
+    filterTabs: [],
+    activeCategory: "all",
   },
 
   /**
@@ -76,6 +116,7 @@ Page({
    * @returns {void}
    */
   onShow() {
+    syncTemporaryRecipes();
     const sharedIds = this.data.recipeIds || [];
     const order = !sharedIds.length && this.data.orderId
       ? store.getOrderById(this.data.orderId)
@@ -93,17 +134,28 @@ Page({
     const ownedIds = sourceOrder
       ? (sourceOrder.all_ingredient_ids || sourceOrder.owned_ingredient_ids || sourceOrder.ingredient_ids || [])
       : store.getAllIngredientIds();
-    const recipes = getRecipesByIds(effectiveIds).map((item) =>
+    const allRecipes = getRecipesByIds(effectiveIds).map((item) =>
       serializeRecipe(item, ownedIds),
     );
+    const activeCategory = this.data.activeCategory === "all"
+      || allRecipes.some((item) => item.category === this.data.activeCategory)
+      ? this.data.activeCategory
+      : "all";
+    const recipes = filterRecipes(allRecipes, activeCategory);
 
     this.setData({
+      allRecipes,
       recipes,
+      activeCategory,
+      filterTabs: buildFilterTabs(allRecipes, activeCategory),
     });
 
-    hydrateImageList(recipes).then((nextRecipes) => {
+    hydrateImageList(allRecipes).then((nextRecipes) => {
+      const currentCategory = this.data.activeCategory;
       this.setData({
-        recipes: nextRecipes,
+        allRecipes: nextRecipes,
+        recipes: filterRecipes(nextRecipes, currentCategory),
+        filterTabs: buildFilterTabs(nextRecipes, currentCategory),
       });
     });
   },
@@ -122,6 +174,20 @@ Page({
       title,
       path: `/pages/recipes/index?recipeIds=${encodeURIComponent(allIds.join(","))}`,
     };
+  },
+
+  /**
+   * 切换菜谱档案分类筛选。
+   * @param {object} event 分类按钮事件。
+   * @returns {void}
+   */
+  changeCategory(event) {
+    const category = event.currentTarget.dataset.category || "all";
+    this.setData({
+      activeCategory: category,
+      recipes: filterRecipes(this.data.allRecipes, category),
+      filterTabs: buildFilterTabs(this.data.allRecipes, category),
+    });
   },
 
   toggleRecipeDetail(event) {

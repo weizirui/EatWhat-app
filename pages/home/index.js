@@ -10,6 +10,7 @@ const {
 const { buildMenuPlan } = require("../../utils/menu-plan");
 const { getIngredientsByIds } = require("../../utils/catalog");
 const { generateRecipeImageIfMissing } = require("../../utils/ai-image");
+const { suggestAiRecipes } = require("../../utils/ai-recipes");
 
 const HIDDEN_RECIPE_CATEGORIES = new Set(["甜品", "自制", "主食"]);
 const HIDDEN_RECIPE_IDS = new Set(["chicken-soup"]);
@@ -38,6 +39,15 @@ function buildImageState(url) {
   };
 }
 
+/**
+ * 合并菜谱自带图片和固定云存储图片路径。
+ * @param {object} recipe 菜谱对象。
+ * @returns {object} 页面图片状态。
+ */
+function buildRecipeImageState(recipe) {
+  return buildImageState((recipe && recipe.image) || recipeImage(recipe && recipe.id));
+}
+
 Page({
   data: {
     categories: [],
@@ -60,6 +70,12 @@ Page({
     favoritesFilterIcon: "♡",
     favoritesFilterText: "我的收藏",
     isFavoritesView: false,
+    weekPlanOpen: false,
+    aiRecipeOpen: false,
+    aiKeyword: "",
+    aiRecipeSuggestions: [],
+    aiGenerating: false,
+    aiErrorText: "",
   },
 
   onLoad() {
@@ -89,8 +105,9 @@ Page({
 
   refresh() {
     const selectedRecipeIds = store.getPickedRecipes();
+    const temporaryRecipes = store.getTemporaryRecipes();
     const favoriteIds = store.getFavoriteRecipes();
-    const plan = buildMenuPlan(selectedRecipeIds);
+    const plan = buildMenuPlan(selectedRecipeIds, temporaryRecipes);
     const activeCategory = this.data.activeCategory || (this.data.categories[0] && this.data.categories[0].id) || "";
     const searchQuery = normalizeKeyword(this.data.searchQuery);
     const categories = this.data.categories.map((item) => ({
@@ -110,6 +127,22 @@ Page({
       : visibleRecipes.filter((item) =>
           isFavorites ? favoriteIds.includes(item.id) : item.category === activeCategory,
         );
+    const aiRecipeSuggestions = (this.data.aiRecipeSuggestions || []).map((item) => {
+      const active = selectedRecipeIds.includes(item.id);
+      return Object.assign({}, item, {
+        active,
+        ingredientSummary: (item.custom_ingredients || [])
+          .slice(0, 3)
+          .map((ingredient) => ingredient.name)
+          .join("、"),
+        stateText: active ? "已加入" : "加入清单",
+        stateClass: active
+          ? "ai-recipe-action ai-recipe-action-active"
+          : "ai-recipe-action",
+        imageStatusText: item.imageGenerating ? "配图生成中" : "",
+        ...buildRecipeImageState(item),
+      });
+    });
 
     const recipes = baseList
       .slice()
@@ -142,7 +175,7 @@ Page({
             .slice(0, 3)
             .map((ingredient) => ingredient.name)
             .join("、"),
-          ...buildImageState(recipeImage(item.id)),
+          ...buildRecipeImageState(item),
           categoryName: item.category,
         };
       });
@@ -152,7 +185,7 @@ Page({
       name: item.title,
       title: item.title,
       emoji: item.emoji,
-      ...buildImageState(recipeImage(item.id)),
+      ...buildRecipeImageState(item),
       metaText: [item.category, `${item.minutes} 分钟`, item.difficulty]
         .filter(Boolean)
         .join(" · "),
@@ -188,6 +221,7 @@ Page({
       favoritesFilterIcon: isFavorites ? "←" : "♡",
       favoritesFilterText: isFavorites ? "返回原分类" : "我的收藏",
       isFavoritesView: isFavorites,
+      aiRecipeSuggestions,
       resultHint: searchQuery
         ? `共找到 ${recipes.length} 道和“${this.data.searchQuery}”相关的菜谱`
         : isFavorites
@@ -211,6 +245,136 @@ Page({
         purchaseIngredients: nextPurchaseIngredients,
       });
     });
+    hydrateImageList(aiRecipeSuggestions).then((nextAiRecipeSuggestions) => {
+      this.setData({
+        aiRecipeSuggestions: nextAiRecipeSuggestions,
+      });
+    });
+  },
+
+  updateAiKeyword(event) {
+    this.setData({
+      aiKeyword: event.detail.value,
+      aiErrorText: "",
+    });
+  },
+
+  /**
+   * 展开或收起一周菜单入口。
+   * @returns {void}
+   */
+  toggleWeekPlanOpen() {
+    this.setData({
+      weekPlanOpen: !this.data.weekPlanOpen,
+    });
+  },
+
+  /**
+   * 展开或收起 AI 菜谱生成区。
+   * @returns {void}
+   */
+  toggleAiRecipeOpen() {
+    this.setData({
+      aiRecipeOpen: !this.data.aiRecipeOpen,
+    });
+  },
+
+  /**
+   * 根据用户输入生成 3 道临时菜谱。
+   * @returns {Promise<void>} 生成完成后展示 AI 推荐菜。
+   */
+  async generateAiRecipes() {
+    const keyword = String(this.data.aiKeyword || "").trim();
+    if (!keyword) {
+      wx.showToast({
+        title: "先输入想吃什么",
+        icon: "none",
+      });
+      return;
+    }
+    if (this.data.aiGenerating) {
+      return;
+    }
+    this.setData({
+      aiGenerating: true,
+      aiErrorText: "",
+      aiRecipeOpen: true,
+    });
+    try {
+      const recipes = await suggestAiRecipes(keyword);
+      store.saveTemporaryRecipes(recipes);
+      this.setData({
+        aiGenerating: false,
+        aiRecipeSuggestions: recipes,
+      });
+      this.refresh();
+      this.generateAiRecipeImages(recipes);
+    } catch (error) {
+      this.setData({
+        aiGenerating: false,
+        aiErrorText: "暂时生成失败，换个关键词再试试",
+      });
+    }
+  },
+
+  addAiRecipe(event) {
+    const { id } = event.currentTarget.dataset;
+    if (!id) {
+      return;
+    }
+    store.togglePickedRecipe(id);
+    this.refresh();
+  },
+
+  /**
+   * 为 AI 临时菜谱逐张生成配图并写回本地缓存。
+   * @param {object[]} recipes AI 生成的临时菜谱。
+   * @returns {Promise<void>} 图片生成完成后刷新建议列表。
+   */
+  async generateAiRecipeImages(recipes) {
+    const list = Array.isArray(recipes) ? recipes : [];
+    for (let index = 0; index < list.length; index += 1) {
+      const recipe = list[index];
+      if (!recipe || !recipe.id || recipe.image) {
+        continue;
+      }
+      this.setData({
+        aiRecipeSuggestions: (this.data.aiRecipeSuggestions || []).map((item) => (
+          item.id === recipe.id
+            ? Object.assign({}, item, { imageGenerating: true, imageFailed: false })
+            : item
+        )),
+      });
+      try {
+        const result = await generateRecipeImageIfMissing(recipe);
+        const storedRecipe = Object.assign({}, recipe, {
+          image: result.fileID || result.image || "",
+        });
+        store.saveTemporaryRecipes([storedRecipe]);
+        this.setData({
+          aiRecipeSuggestions: (this.data.aiRecipeSuggestions || []).map((item) => (
+            item.id === recipe.id
+              ? Object.assign({}, item, {
+                  image: result.image || result.fileID || "",
+                  hasImage: Boolean(result.image || result.fileID),
+                  imageGenerating: false,
+                  imageFailed: false,
+                })
+              : item
+          )),
+        });
+        this.refresh();
+      } catch (error) {
+        console.warn("[ai-recipes] 临时菜谱图片生成失败", { id: recipe.id, error });
+        this.setData({
+          aiRecipeSuggestions: (this.data.aiRecipeSuggestions || []).map((item) => (
+            item.id === recipe.id
+              ? Object.assign({}, item, { imageGenerating: false, imageFailed: true })
+              : item
+          )),
+        });
+      }
+    }
   },
 
   changeCategory(event) {
@@ -359,12 +523,6 @@ Page({
     });
   },
 
-  goSettings() {
-    wx.navigateTo({
-      url: "/pages/settings/index?source=manage",
-    });
-  },
-
   goPlan() {
     wx.navigateTo({
       url: "/pages/plan/index",
@@ -413,6 +571,11 @@ Page({
 
     try {
       const result = await generateRecipeImageIfMissing(recipe);
+      if (recipe.aiGenerated || String(recipe.id || "").indexOf("ai-") === 0) {
+        store.saveTemporaryRecipes([Object.assign({}, recipe, {
+          image: result.fileID || result.image || "",
+        })]);
+      }
       const currentList = this.data[listKey] || [];
       this.setData({
         [listKey]: currentList.map((item) => item.id === id
@@ -440,6 +603,17 @@ Page({
     const id = event.currentTarget.dataset.id;
     this.markImageFailed("recipes", id);
     this.generateRecipeImageForList("recipes", id);
+  },
+
+  /**
+   * AI 临时菜谱图加载失败时重新生成图片。
+   * @param {object} event 图片错误事件。
+   * @returns {void}
+   */
+  handleAiRecipeImageError(event) {
+    const id = event.currentTarget.dataset.id;
+    this.markImageFailed("aiRecipeSuggestions", id);
+    this.generateRecipeImageForList("aiRecipeSuggestions", id);
   },
 
   handleOwnedImageError(event) {

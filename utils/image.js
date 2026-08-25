@@ -7,7 +7,66 @@ const {
 const tempUrlCache = Object.create(null);
 const preloadedImageCache = Object.create(null);
 const CLOUD_URL_BATCH_SIZE = 40;
+const TEMP_URL_STORAGE_KEY = "qx_cloud_image_temp_urls";
+const TEMP_URL_CACHE_TTL = 2 * 60 * 60 * 1000;
+const TEMP_URL_CACHE_LIMIT = 300;
 const LOCAL_RECIPE_IMAGE_OVERRIDES = new Set(["chicken-soup"]);
+let persistentTempUrlCacheLoaded = false;
+
+function canUseStorageSync() {
+  return typeof wx !== "undefined"
+    && typeof wx.getStorageSync === "function"
+    && typeof wx.setStorageSync === "function";
+}
+
+/**
+ * 读取本地缓存的云图片临时链接。
+ * @returns {void}
+ */
+function loadPersistentTempUrlCache() {
+  if (persistentTempUrlCacheLoaded || !canUseStorageSync()) {
+    persistentTempUrlCacheLoaded = true;
+    return;
+  }
+  persistentTempUrlCacheLoaded = true;
+  try {
+    const now = Date.now();
+    const cached = wx.getStorageSync(TEMP_URL_STORAGE_KEY) || {};
+    Object.keys(cached).forEach((fileID) => {
+      const item = cached[fileID] || {};
+      if (item.url && Number(item.expireAt || 0) > now) {
+        tempUrlCache[fileID] = item.url;
+      }
+    });
+  } catch (error) {
+    console.warn("[image] 读取云图片缓存失败", error);
+  }
+}
+
+/**
+ * 保存云图片临时链接，减少重复向云存储换 URL。
+ * @returns {void}
+ */
+function savePersistentTempUrlCache() {
+  if (!canUseStorageSync()) {
+    return;
+  }
+  try {
+    const now = Date.now();
+    const entries = Object.keys(tempUrlCache)
+      .slice(-TEMP_URL_CACHE_LIMIT)
+      .reduce((acc, fileID) => {
+        acc[fileID] = {
+          url: tempUrlCache[fileID],
+          expireAt: now + TEMP_URL_CACHE_TTL,
+        };
+        return acc;
+      }, {});
+    wx.setStorageSync(TEMP_URL_STORAGE_KEY, entries);
+  } catch (error) {
+    console.warn("[image] 保存云图片缓存失败", error);
+  }
+}
 
 function buildImageUrl(type, id) {
   if (!id) {
@@ -61,6 +120,7 @@ function unique(list) {
 }
 
 function getResolvedImageUrl(url) {
+  loadPersistentTempUrlCache();
   if (!isCloudFileId(url)) {
     return url || "";
   }
@@ -76,6 +136,7 @@ function clearResolvedImageUrl(url) {
   if (isCloudFileId(url)) {
     delete tempUrlCache[url];
     delete preloadedImageCache[url];
+    savePersistentTempUrlCache();
   }
 }
 
@@ -109,6 +170,7 @@ function resolveCloudImageBatch(urls) {
             tempUrlCache[fileId] = tempUrl;
           }
         });
+        savePersistentTempUrlCache();
 
         const failedFiles = fileList
           .filter((item) => !(item.tempFileURL || item.tempFileUrl))
@@ -131,6 +193,7 @@ function resolveCloudImageBatch(urls) {
 }
 
 async function resolveCloudImageUrls(urls) {
+  loadPersistentTempUrlCache();
   const cloudUrls = unique(urls).filter(isCloudFileId);
   if (cloudUrls.length === 0) {
     return {};
@@ -139,6 +202,7 @@ async function resolveCloudImageUrls(urls) {
   const unresolved = cloudUrls.filter((url) => !tempUrlCache[url]);
   if (
     unresolved.length > 0
+    && typeof wx !== "undefined"
     && wx.cloud
     && typeof wx.cloud.getTempFileURL === "function"
   ) {
@@ -164,7 +228,7 @@ async function resolveCloudImageUrls(urls) {
  */
 async function preloadImageUrls(urls, options) {
   const cloudUrls = unique(urls).filter(isCloudFileId);
-  if (cloudUrls.length === 0 || typeof wx.getImageInfo !== "function") {
+  if (cloudUrls.length === 0 || typeof wx === "undefined" || typeof wx.getImageInfo !== "function") {
     return { requested: cloudUrls.length, loaded: 0 };
   }
 

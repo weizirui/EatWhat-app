@@ -1,20 +1,22 @@
 const { RECIPES } = require("../data/recipes");
 const { INGREDIENTS } = require("../data/ingredients");
 
-const recipeMap = new Map(RECIPES.map((item) => [item.id, item]));
 const ingredientMap = new Map(INGREDIENTS.map((item) => [item.id, item]));
 
-function getRecipesByIds(ids) {
+function getRecipesByIds(ids, extraRecipes) {
+  const recipeMap = new Map(RECIPES.concat(extraRecipes || []).map((item) => [item.id, item]));
   return (ids || []).map((id) => recipeMap.get(id)).filter(Boolean);
 }
 
-function buildMenuPlan(recipeIds) {
-  const recipes = getRecipesByIds(recipeIds);
+function buildMenuPlan(recipeIds, extraRecipes) {
+  const recipes = getRecipesByIds(recipeIds, extraRecipes);
   const ingredientUsageMap = new Map();
 
   recipes.forEach((recipe) => {
     (recipe.ingredient_ids || []).forEach((ingredientId) => {
-      const ingredient = ingredientMap.get(ingredientId);
+      const customIngredients = recipe.custom_ingredients || [];
+      const ingredient = ingredientMap.get(ingredientId)
+        || customIngredients.find((item) => item.id === ingredientId);
       if (!ingredient) {
         return;
       }
@@ -31,7 +33,7 @@ function buildMenuPlan(recipeIds) {
         id: ingredient.id,
         name: ingredient.name,
         emoji: ingredient.emoji,
-        categoryId: ingredient.category_id,
+        categoryId: ingredient.category_id || ingredient.categoryId || "custom",
         count: 1,
         recipeIds: [recipe.id],
         recipeTitles: [recipe.title],

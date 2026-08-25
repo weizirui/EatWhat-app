@@ -7,20 +7,20 @@ const root = path.resolve(__dirname, "..");
 const template = fs.readFileSync(path.join(root, "pages/settings/index.wxml"), "utf8");
 const script = fs.readFileSync(path.join(root, "pages/settings/index.js"), "utf8");
 
-assert.match(template, /协作人管理/);
-assert.match(template, /生成邀请码/);
-assert.match(template, /输入邀请码/);
-assert.match(template, /默认采购人/);
-assert.match(template, /wx:for="\{\{collaborators\}\}"/);
-assert.match(template, /设为默认/);
-assert.match(template, /removeCollaborator/);
-assert.match(template, /unreadTaskCount/);
-assert.match(template, /我的协作昵称/);
-assert.match(template, /updateCollabDisplayName/);
-assert.match(template, /!collaboratorsLoading && collaboratorsError/);
-assert.match(template, /!collaboratorsLoading && !collaboratorsError && !collaborators\.length/);
+assert.doesNotMatch(template, /协作人管理/);
+assert.doesNotMatch(template, /生成邀请码/);
+assert.doesNotMatch(template, /输入邀请码/);
+assert.doesNotMatch(template, /默认采购人/);
+assert.doesNotMatch(template, /wx:for="\{\{collaborators\}\}"/);
+assert.doesNotMatch(template, /设为默认/);
+assert.doesNotMatch(template, /removeCollaborator/);
+assert.doesNotMatch(template, /unreadTaskCount/);
+assert.doesNotMatch(template, /我的协作昵称/);
+assert.doesNotMatch(template, /updateCollabDisplayName/);
+assert.doesNotMatch(template, /!collaboratorsLoading && collaboratorsError/);
+assert.doesNotMatch(template, /!collaboratorsLoading && !collaboratorsError && !collaborators\.length/);
 assert.doesNotMatch(template, /wx:else-if="\{\{!collaborators\.length\}\}"/);
-assert.match(template, /bindtap="loadCollaborators"/);
+assert.doesNotMatch(template, /bindtap="loadCollaborators"/);
 assert.match(script, /create_collab_invite/);
 assert.match(script, /redeem_collab_invite/);
 assert.match(script, /list_collaborators/);
@@ -43,6 +43,13 @@ function loadSettingsPage(deps) {
       if (request === "../../utils/cloud") {
         return {
           callCloud: deps.callCloud,
+        };
+      }
+      if (request === "../../utils/format") {
+        return {
+          formatOrderTitle() {
+            return "7月9日 12:30 菜单";
+          },
         };
       }
       throw new Error(`unexpected require: ${request}`);
@@ -155,7 +162,7 @@ function toPlainObject(value) {
   await page.loadCollaborators();
   assert.equal(page.data.collaboratorsLoading, false);
   assert.equal(page.data.collaborators.length, 1);
-  assert.equal(page.data.unreadTaskCount, 2);
+  assert.equal(page.data.unreadTaskCount, undefined);
   assert.equal(page.data.defaultReceiverOpenid, "");
   assert.equal(page.data.defaultReceiverName, "");
   assert.deepEqual(toPlainObject(storeCalls[0]), { defaultReceiverOpenid: "" });

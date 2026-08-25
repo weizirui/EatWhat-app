@@ -1,5 +1,6 @@
 const store = require("../../utils/store");
 const { callCloud } = require("../../utils/cloud");
+const { formatOrderTitle } = require("../../utils/format");
 
 /**
  * 规范用户输入的邀请码。
@@ -94,7 +95,6 @@ Page({
     collaborators: [],
     collaboratorsLoading: false,
     collaboratorsError: "",
-    unreadTaskCount: 0,
     defaultReceiverOpenid: "",
     defaultReceiverName: "",
     collabDisplayName: "",
@@ -103,28 +103,19 @@ Page({
   onLoad(options) {
     const source = options && options.source ? options.source : "launch";
     this.setData({
-      launchEntry: source === "launch" || source === "setup",
+      launchEntry: false,
       returnPage: options && options.return ? options.return : "",
     });
   },
 
   /**
-   * 刷新本机订单和在线协作状态。
+   * 刷新本机订单列表。
    * @returns {void}
    */
   onShow() {
     const settings = store.getSettings();
     const setupCompleted = store.isSetupCompleted(settings);
-    const isOnboarding = this.data.launchEntry && !setupCompleted;
-
-    if (this.data.launchEntry && setupCompleted) {
-      if (this.data.returnPage === "match") {
-        wx.navigateBack({ delta: 1 });
-      } else {
-        wx.reLaunch({ url: "/pages/landing/index" });
-      }
-      return;
-    }
+    const isOnboarding = false;
 
     const orders = store.getOrders();
     this.setData({
@@ -135,6 +126,7 @@ Page({
       ordersCount: orders.length,
       recentOrders: orders.slice(0, 6).map((order) => ({
         id: order.id,
+        title: order.title || formatOrderTitle(order.created_at),
         createdAt: order.created_at,
         recipeCount: (order.recipe_ids || []).length,
         ingredientCount: (order.all_ingredient_ids || order.ingredient_ids || []).length,
@@ -144,7 +136,6 @@ Page({
       defaultReceiverName: "",
       collabDisplayName: settings.collabDisplayName || "",
     });
-    this.loadCollaborators();
   },
 
   updateContactName(event) {
@@ -173,21 +164,6 @@ Page({
 
   saveBasicSettings() {
     const contactName = String(this.data.contactName || "").trim();
-    if (!contactName) {
-      wx.showToast({
-        title: "请先填写称呼",
-        icon: "none",
-      });
-      return;
-    }
-    if (!this.data.defaultReceiverOpenid) {
-      wx.showToast({
-        title: "请先绑定并选择采购人",
-        icon: "none",
-      });
-      return;
-    }
-
     const currentSettings = store.getSettings();
     const collabDisplayName = String(currentSettings.collabDisplayName || "").trim() || contactName;
     store.updateSettings({
@@ -195,7 +171,7 @@ Page({
       contactName,
       defaultRemark: String(this.data.defaultRemark || "").trim(),
       collabDisplayName,
-      defaultReceiverOpenid: this.data.defaultReceiverOpenid,
+      defaultReceiverOpenid: this.data.defaultReceiverOpenid || "",
     });
     this.setData({
       setupCompleted: true,
@@ -261,7 +237,7 @@ Page({
   },
 
   /**
-   * 加载当前用户的双向协作关系和未读任务数。
+   * 加载当前用户的双向协作关系。
    * @returns {Promise<void>} 加载完成。
    */
   async loadCollaborators() {
@@ -284,7 +260,6 @@ Page({
       this.setData({
         collaborators,
         collaboratorsLoading: false,
-        unreadTaskCount: Number(result.unreadTaskCount || 0),
         ...defaultReceiverState,
       });
     } catch (error) {
@@ -292,7 +267,6 @@ Page({
         collaborators: [],
         collaboratorsLoading: false,
         collaboratorsError: getCloudErrorText(error, "list_collaborators"),
-        unreadTaskCount: 0,
         defaultReceiverName: "",
       });
     }
@@ -446,7 +420,7 @@ Page({
   },
 
   /**
-   * 双向解除协作关系，保留历史采购任务。
+   * 双向解除协作关系。
    * @param {object} event 包含 openid 的点击事件。
    * @returns {void}
    */
@@ -484,16 +458,6 @@ Page({
           });
         }
       },
-    });
-  },
-
-  /**
-   * 进入协作任务列表。
-   * @returns {void}
-   */
-  navigateToTasks() {
-    wx.navigateTo({
-      url: "/pages/tasks/index",
     });
   },
 

@@ -57,46 +57,38 @@
   font-size: 24rpx;
 }
 
-.mini-link {
-  font-size: 24rpx;
-}
-
-.market-hero-links {
-  display: flex;
-  align-items: center;
-  gap: 24rpx;
-}
-
-.week-plan-entry {
-  min-height: 140rpx;
+.home-fold-card {
   margin-top: 20rpx;
-  padding: 22rpx 22rpx 22rpx 24rpx;
+  padding: 0;
   border: 2rpx solid rgba(35, 163, 86, 0.14);
   border-radius: 16rpx;
   background: #ffffff;
-  display: flex;
-  align-items: center;
-  gap: 20rpx;
   box-sizing: border-box;
   box-shadow: 0 8rpx 22rpx rgba(47, 74, 58, 0.05);
+  overflow: hidden;
 }
 
-.week-plan-entry-pressed {
+.home-fold-head {
+  min-height: 112rpx;
+  padding: 20rpx 22rpx 20rpx 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+  box-sizing: border-box;
+}
+
+.home-fold-head:active {
   background: #f1f8f3;
 }
 
-.week-plan-entry-copy {
-  flex: 1;
-  min-width: 0;
-}
-
-.week-plan-entry-kicker {
+.home-fold-kicker {
   color: #23a356;
   font-size: 20rpx;
   font-weight: 700;
 }
 
-.week-plan-entry-title {
+.home-fold-title {
   margin-top: 6rpx;
   color: #183426;
   font-size: 28rpx;
@@ -104,22 +96,205 @@
   line-height: 1.35;
 }
 
-.week-plan-entry-sub {
+.home-fold-sub {
   margin-top: 5rpx;
   color: #718077;
   font-size: 22rpx;
 }
 
-.week-plan-entry-action {
-  width: 64rpx;
-  height: 64rpx;
+.home-fold-arrow {
+  width: 60rpx;
+  height: 60rpx;
   border-radius: 50%;
   background: #23a356;
   color: #ffffff;
-  font-size: 42rpx;
-  line-height: 58rpx;
+  font-size: 34rpx;
+  line-height: 54rpx;
   text-align: center;
   flex-shrink: 0;
+  transform: rotate(-90deg);
+  transition: transform 0.2s ease;
+}
+
+.home-fold-arrow-open {
+  transform: rotate(0deg);
+}
+
+.home-fold-body {
+  padding: 0 22rpx 22rpx;
+}
+
+.week-plan-entry-button {
+  width: 100%;
+  height: 76rpx;
+  line-height: 76rpx;
+  margin: 0;
+  padding: 0;
+  border-radius: 16rpx;
+  background: #edf8f0;
+  color: #20894c;
+  font-size: 26rpx;
+  font-weight: 700;
+}
+
+.week-plan-entry-button::after {
+  border: none;
+}
+
+.ai-recipe-box {
+  border-color: rgba(35, 163, 86, 0.1);
+}
+
+.ai-recipe-kicker {
+  color: #23a356;
+  font-size: 20rpx;
+  font-weight: 700;
+}
+
+.ai-recipe-title {
+  margin-top: 6rpx;
+  color: #183426;
+  font-size: 28rpx;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.ai-recipe-input-row {
+  margin-top: 18rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.ai-recipe-input {
+  flex: 1;
+  min-width: 0;
+  height: 72rpx;
+  padding: 0 18rpx;
+  border-radius: 14rpx;
+  background: #f6faf7;
+  color: #183426;
+  font-size: 25rpx;
+  box-sizing: border-box;
+}
+
+.ai-recipe-btn {
+  width: 136rpx;
+  height: 72rpx;
+  line-height: 72rpx;
+  margin: 0;
+  padding: 0;
+  border-radius: 14rpx;
+  background: #23a356;
+  color: #ffffff;
+  font-size: 25rpx;
+  font-weight: 700;
+}
+
+.ai-recipe-error {
+  margin-top: 12rpx;
+  color: #b06034;
+  font-size: 23rpx;
+}
+
+.ai-recipe-list {
+  margin-top: 16rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.ai-recipe-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+  padding: 16rpx;
+  border-radius: 18rpx;
+  background: #f8fbf8;
+  box-sizing: border-box;
+}
+
+.ai-recipe-card-body {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  min-width: 0;
+}
+
+.ai-recipe-image {
+  width: 118rpx;
+  height: 118rpx;
+  border-radius: 16rpx;
+  flex-shrink: 0;
+  background: #edf5ef;
+}
+
+.ai-recipe-image-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6rpx;
+  color: #7b8b81;
+}
+
+.ai-recipe-image-emoji {
+  font-size: 38rpx;
+  line-height: 1;
+}
+
+.ai-recipe-image-copy {
+  width: 100rpx;
+  color: #7b8b81;
+  font-size: 19rpx;
+  line-height: 1.15;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-recipe-card-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.ai-recipe-card-title {
+  color: #183426;
+  font-size: 29rpx;
+  font-weight: 800;
+  line-height: 1.35;
+  word-break: break-all;
+}
+
+.ai-recipe-card-meta,
+.ai-recipe-card-ingredients {
+  margin-top: 6rpx;
+  color: #728177;
+  font-size: 23rpx;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-recipe-action {
+  width: 100%;
+  height: 68rpx;
+  line-height: 68rpx;
+  margin: 0;
+  padding: 0;
+  border-radius: 16rpx;
+  background: #edf8f0;
+  color: #20894c;
+  font-size: 25rpx;
+  font-weight: 700;
+}
+
+.ai-recipe-action-active {
+  background: #23a356;
+  color: #ffffff;
 }
 
 .category-heading {

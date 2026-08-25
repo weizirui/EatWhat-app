@@ -128,6 +128,8 @@ const pageInstance = {
 pageConfig.onShow.call(pageInstance);
 
 assert.equal(pageInstance.data.recipes.length, 1);
+assert.equal(pageInstance.data.allRecipes.length, 1);
+assert.equal(pageInstance.data.filterTabs.length, 2);
 assert.deepEqual(capturedOwnedIds, ["egg", "seaweed"]);
 
 pageConfig.onLoad.call(pageInstance, { orderId: "history-order" });

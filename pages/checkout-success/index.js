@@ -1,6 +1,13 @@
 const store = require("../../utils/store");
-const { getRecipesByIds, getIngredientsByIds } = require("../../utils/catalog");
+const { getRecipesByIds, getIngredientsByIds, setExtraRecipes } = require("../../utils/catalog");
 const { callCloud } = require("../../utils/cloud");
+const { formatOrderTitle } = require("../../utils/format");
+
+function syncTemporaryRecipes() {
+  if (typeof setExtraRecipes === "function") {
+    setExtraRecipes(typeof store.getTemporaryRecipes === "function" ? store.getTemporaryRecipes() : []);
+  }
+}
 
 /**
  * 统计订单中的菜谱和食材数量。
@@ -18,6 +25,36 @@ function buildOrderSummary(order) {
   };
 }
 
+/**
+ * 拼接订单、食材和做法文本。
+ * @param {object[]} recipes 本次订单的菜谱列表。
+ * @param {string} ingredientText 本次订单的总食材文本。
+ * @param {string} orderTitle 订单展示标题。
+ * @returns {string} 可直接发给采购人的完整订单文本。
+ */
+function buildOrderCopyText(recipes, ingredientText, orderTitle) {
+  const safeRecipes = Array.isArray(recipes) ? recipes : [];
+  const lines = [
+    orderTitle || "本次菜单",
+    "",
+    `本次菜谱：${safeRecipes.map((item) => item.title).join("、") || "未记录菜谱"}`,
+    `采购食材：${ingredientText || "未记录食材"}`,
+  ];
+  safeRecipes.forEach((recipe) => {
+    lines.push("", `${recipe.title}做法：`);
+    if (Array.isArray(recipe.base_seasonings) && recipe.base_seasonings.length) {
+      lines.push(`调味：${recipe.base_seasonings.join("、")}`);
+    }
+    (recipe.steps || []).forEach((step, index) => {
+      lines.push(`${index + 1}. ${step}`);
+    });
+    if (recipe.tip) {
+      lines.push(`小贴士：${recipe.tip}`);
+    }
+  });
+  return lines.join("\n").trim();
+}
+
 Page({
   data: {
     orderId: "",
@@ -29,6 +66,7 @@ Page({
     ownedIngredientsText: "",
     suggestedIngredientsText: "",
     allIngredientsText: "",
+    orderTitle: "",
     recipeCountText: "",
     ingredientCountText: "",
     collabStatusText: "",
@@ -56,6 +94,7 @@ Page({
   },
 
   onShow() {
+    syncTemporaryRecipes();
     const order = this.data.orderId
       ? store.getOrderById(this.data.orderId)
       : store.getLastOrder();
@@ -88,6 +127,7 @@ Page({
 
     this.setData({
       order,
+      orderTitle: order ? (order.title || formatOrderTitle(order.created_at)) : "",
       recipes,
       ownedIngredientsText,
       suggestedIngredientsText,
@@ -102,16 +142,37 @@ Page({
     const recipeIds = this.data.recipes.map((item) => item.id);
     const sharedIds = this.data.sharedRecipeIds || [];
     const allIds = Array.from(new Set(sharedIds.concat(recipeIds)));
-    const queryParts = [`recipeIds=${encodeURIComponent(allIds.join(","))}`];
+    const queryParts = this.data.order && this.data.order.share_id
+      ? [`shareId=${encodeURIComponent(this.data.order.share_id)}`]
+      : [`recipeIds=${encodeURIComponent(allIds.join(","))}`];
     if (this.data.order && this.data.order.id) {
       queryParts.unshift(`id=${encodeURIComponent(this.data.order.id)}`);
     }
     return {
-      title: this.data.order && this.data.order.id
-        ? `订单 ${this.data.order.id} 的采购清单`
+      title: this.data.order
+        ? `${this.data.orderTitle || this.data.order.title || "本次菜单"} 的采购清单`
         : "分享订单清单",
       path: `/pages/checkout-success/index?${queryParts.join("&")}`,
     };
+  },
+
+  /**
+   * 复制订单清单文本，未认证小程序无法直接调起微信分享时使用。
+   * @returns {void}
+   */
+  copyOrderText() {
+    const ingredientText = this.data.allIngredientsText || this.data.ownedIngredientsText || "未记录食材";
+    wx.setClipboardData({
+      data: buildOrderCopyText(this.data.recipes, ingredientText, this.data.orderTitle),
+      success() {
+        wx.showModal({
+          title: "已复制到剪贴板",
+          content: "去微信聊天里粘贴发送给采购人，对方能看到采购清单和每道菜做法。",
+          showCancel: false,
+          confirmText: "知道了",
+        });
+      },
+    });
   },
 
   /**
@@ -168,7 +229,7 @@ Page({
   },
 
   /**
-   * 查看当前订单对应的完整做法。
+   * 查看当前订单对应的菜谱档案。
    * @returns {void}
    */
   goRecipes() {

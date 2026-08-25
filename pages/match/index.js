@@ -2,10 +2,10 @@ const store = require("../../utils/store");
 const { buildMenuPlan } = require("../../utils/menu-plan");
 const {
   generateOrderId,
+  formatOrderTitle,
   formatTime,
 } = require("../../utils/format");
-const { buildRecipeProfile } = require("../../utils/recipe-profile");
-const { getIngredientsByIds } = require("../../utils/catalog");
+const { getIngredientsByIds, setExtraRecipes } = require("../../utils/catalog");
 const { callCloud } = require("../../utils/cloud");
 const { callContainer } = require("../../utils/container");
 
@@ -34,29 +34,6 @@ function serializeIngredient(item) {
   };
 }
 
-function serializePicked(recipe, allIngredientIds) {
-  const profile = buildRecipeProfile(recipe, allIngredientIds);
-  return {
-    id: recipe.id,
-    title: recipe.title,
-    emoji: recipe.emoji,
-    caloriesText: profile.caloriesText,
-    proteinText: profile.proteinText,
-    servingsText: profile.servingsText,
-    cookingMethod: profile.cookingMethod,
-    flavorTags: profile.flavorTags,
-    suitableTags: profile.suitableTags,
-    swapLines: profile.swapLines.slice(0, 2),
-    conditionAdvice: profile.conditionAdvice.slice(0, 2),
-    ingredientLines: profile.ingredientLines,
-    baseSeasoningLines: profile.baseSeasoningLines,
-    stepLines: recipe.steps.map((step, index) => ({
-      id: `${recipe.id}-step-${index}`,
-      text: `${index + 1}. ${step}`,
-    })),
-  };
-}
-
 Page({
   data: {
     selectedRecipes: [],
@@ -65,158 +42,118 @@ Page({
     purchaseIngredientsText: "",
     recipeCount: 0,
     ingredientCount: 0,
-    pickedPanelOpen: false,
-    pickedPanelClass: "picked-sheet",
-    pickedTabs: [],
-    activePickedId: "",
-    activePickedDetail: null,
     submitting: false,
-    setupCompleted: false,
-    collaborators: [],
-    collaboratorsLoading: false,
-    collaboratorsError: "",
-    selectedReceiverOpenid: "",
-    selectedReceiverName: "仅自己保存",
+    shareId: "",
+    shareCreating: false,
+    shareStatus: "pending",
+    shareStatusText: "待采购",
+    shareActionText: "我来买",
+    shareParticipantText: "",
+    shareUpdating: false,
+    shareErrorText: "",
     sharedRecipeIds: [],
+    sharedIngredientIds: [],
+    sharedIngredientCounts: [],
+    sharedIngredientNames: [],
     isShared: false,
   },
 
   /**
-   * 记录分享进入的菜谱 ID，进入只读展示模式。
+   * 记录分享入口参数，shareId 优先从云端读取清单。
    * @param {object} options 页面路由参数。
    * @returns {void}
    */
   onLoad(options) {
+    const shareId = options && options.shareId ? decodeURIComponent(options.shareId) : "";
     const raw = options && options.recipeIds ? decodeURIComponent(options.recipeIds) : "";
     const sharedRecipeIds = raw ? raw.split(",").filter(Boolean) : [];
     this.setData({
+      shareId,
       sharedRecipeIds,
-      isShared: sharedRecipeIds.length > 0,
+      isShared: Boolean(shareId) || sharedRecipeIds.length > 0,
     });
   },
 
   /**
-   * 刷新清单并加载可指派的协作人。
+   * 刷新清单；分享入口从云端读取状态。
    * @returns {void}
    */
   onShow() {
-    const setupCompleted = store.isSetupCompleted();
-    this.setData({ setupCompleted });
-    this.refresh();
-    if (setupCompleted && !this.data.isShared) {
-      this.loadCollaborators();
-    } else {
-      this.setData({
-        collaborators: [],
-        collaboratorsLoading: false,
-        collaboratorsError: "",
-        selectedReceiverOpenid: "",
-        selectedReceiverName: "仅自己保存",
-      });
+    if (this.data.shareId && this.data.isShared) {
+      this.loadSharedOrder();
+      return;
     }
+    this.refresh();
   },
 
   /**
-   * 分享当前采购清单，带已选菜谱 ID。
+   * 分享当前采购清单，优先使用可协作的 shareId。
    * @returns {object} 分享参数。
    */
   onShareAppMessage() {
     const recipeIds = this.data.selectedRecipes.map((item) => item.id);
+    const shareQuery = this.data.shareId
+      ? `shareId=${encodeURIComponent(this.data.shareId)}`
+      : `recipeIds=${encodeURIComponent(recipeIds.join(","))}`;
     return {
       title: this.data.selectedRecipesText
         ? `采购清单：${this.data.selectedRecipesText}`
         : "分享采购清单",
-      path: `/pages/match/index?recipeIds=${encodeURIComponent(recipeIds.join(","))}`,
+      path: `/pages/match/index?${shareQuery}`,
     };
   },
 
   /**
-   * 加载协作人并恢复仍然有效的默认采购人。
-   * @returns {Promise<void>} 协作人选项更新完成。
+   * 按状态生成共享清单展示文案。
+   * @param {string} status 共享清单状态。
+   * @param {string} claimantName 认领人名称。
+   * @returns {object} 状态文案和按钮文案。
    */
-  async loadCollaborators() {
-    this.setData({
-      collaboratorsLoading: true,
-      collaboratorsError: "",
-    });
-    try {
-      const result = await callCloud("list_collaborators");
-      if (!result.ok) {
-        throw new Error(result.reason || "list_collaborators_failed");
-      }
-      const collaborators = result.collaborators || [];
-      const defaultReceiverOpenid = store.getSettings().defaultReceiverOpenid || "";
-      const selectedOpenid = this.data.selectedReceiverOpenid || defaultReceiverOpenid;
-      const selected = collaborators.find((item) => item.partnerOpenid === selectedOpenid);
-      const normalizedCollaborators = collaborators.map((item) => Object.assign({}, item, {
-        className: selected && selected.partnerOpenid === item.partnerOpenid
-          ? "receiver-option receiver-option-active"
-          : "receiver-option",
-      }));
-
-      if (defaultReceiverOpenid && !collaborators.some((item) => item.partnerOpenid === defaultReceiverOpenid)) {
-        store.updateSettings({ defaultReceiverOpenid: "" });
-      }
-      this.setData({
-        collaborators: normalizedCollaborators,
-        collaboratorsLoading: false,
-        selectedReceiverOpenid: selected ? selected.partnerOpenid : "",
-        selectedReceiverName: selected ? selected.partnerName || "协作人" : "仅自己保存",
-      });
-    } catch (error) {
-      this.setData({
-        collaborators: [],
-        collaboratorsLoading: false,
-        collaboratorsError: "协作人暂时无法加载，本次清单将仅保存给自己",
-        selectedReceiverOpenid: "",
-        selectedReceiverName: "仅自己保存",
-      });
+  buildShareState(status, claimantName) {
+    if (status === "completed") {
+      return {
+        shareStatusText: "已买好",
+        shareActionText: "",
+        shareParticipantText: claimantName ? `${claimantName} 已完成采购` : "采购已完成",
+      };
     }
-  },
-
-  /**
-   * 选择本次清单的唯一接收人。
-   * @param {object} event 包含接收人 OpenID 和名称。
-   * @returns {void}
-   */
-  selectReceiver(event) {
-    const openid = event.currentTarget.dataset.openid || "";
-    const name = event.currentTarget.dataset.name || "仅自己保存";
-    this.setData({
-      selectedReceiverOpenid: openid,
-      selectedReceiverName: name,
-      collaborators: this.data.collaborators.map((item) => Object.assign({}, item, {
-        className: item.partnerOpenid === openid
-          ? "receiver-option receiver-option-active"
-          : "receiver-option",
-      })),
-    });
+    if (status === "purchasing") {
+      return {
+        shareStatusText: "采购中",
+        shareActionText: "已买好",
+        shareParticipantText: claimantName ? `${claimantName} 正在采购` : "有人正在采购",
+      };
+    }
+    return {
+      shareStatusText: "待采购",
+      shareActionText: "我来买",
+      shareParticipantText: "",
+    };
   },
 
   refresh() {
+    setExtraRecipes(store.getTemporaryRecipes());
     const selectedRecipeIds = this.data.isShared
       ? this.data.sharedRecipeIds
       : store.getPickedRecipes();
-    const plan = buildMenuPlan(selectedRecipeIds);
+    const plan = buildMenuPlan(selectedRecipeIds, store.getTemporaryRecipes());
     const selectedRecipes = plan.recipes.map(serializeRecipe);
-    const purchaseIngredients = plan.ingredients.map(serializeIngredient);
+    const purchaseIngredients = this.data.isShared && this.data.sharedIngredientIds.length
+      ? this.data.sharedIngredientIds.map((id, index) => {
+          const ingredient = getIngredientsByIds([id])[0] || {};
+          const count = this.data.sharedIngredientCounts[index] || 1;
+          return {
+            id,
+            name: this.data.sharedIngredientNames[index] || ingredient.name || id,
+            emoji: ingredient.emoji || "",
+            count,
+            countText: `x${count}`,
+            recipeTitlesText: selectedRecipes.map((item) => item.title).join("、"),
+          };
+        })
+      : plan.ingredients.map(serializeIngredient);
     const selectedRecipesText = plan.recipes.map((item) => `${item.emoji} ${item.title}`).join("、");
     const purchaseIngredientsText = plan.ingredients.map((item) => `${item.emoji} ${item.name} x${item.count}`).join("、");
-
-    const activePickedId =
-      this.data.activePickedId && selectedRecipeIds.includes(this.data.activePickedId)
-        ? this.data.activePickedId
-        : (selectedRecipeIds[0] || "");
-    const pickedTabs = selectedRecipes.map((item) => ({
-      id: item.id,
-      title: item.title,
-      emoji: item.emoji,
-      className: item.id === activePickedId ? "picked-tab picked-tab-active" : "picked-tab",
-    }));
-    const activePickedDetail = plan.recipes
-      .map((item) => serializePicked(item, plan.ingredients.map((entry) => entry.id)))
-      .find((item) => item.id === activePickedId) || null;
-    const pickedPanelOpen = selectedRecipeIds.length === 0 ? false : this.data.pickedPanelOpen;
 
     this.setData({
       selectedRecipes,
@@ -225,17 +162,121 @@ Page({
       purchaseIngredientsText,
       recipeCount: selectedRecipes.length,
       ingredientCount: purchaseIngredients.length,
-      pickedTabs,
-      activePickedId,
-      activePickedDetail,
-      pickedPanelOpen,
-      pickedPanelClass: pickedPanelOpen ? "picked-sheet picked-sheet-open" : "picked-sheet",
+    }, () => {
+      if (!this.data.isShared) {
+        this.ensureShareOrder();
+      }
     });
 
     if (!this.data.isShared) {
       this.loadRemoteIngredients(selectedRecipeIds);
-    } else {
-      this.setData({ collaborators: [], collaboratorsLoading: false });
+    }
+  },
+
+  /**
+   * 为当前清单创建云端共享记录，分享时直接携带 shareId。
+   * @returns {Promise<void>} 创建失败时保留 recipeIds 分享兜底。
+   */
+  async ensureShareOrder() {
+    if (this.data.isShared || this.data.shareId || this.data.shareCreating || !this.data.recipeCount) {
+      return;
+    }
+    this.setData({ shareCreating: true, shareErrorText: "" });
+    try {
+      const result = await callCloud("create_shared_order", {
+        recipeIds: this.data.selectedRecipes.map((item) => item.id),
+        ingredientIds: this.data.purchaseIngredients.map((item) => item.id),
+        ingredientCounts: this.data.purchaseIngredients.map((item) => item.count || 1),
+        recipeNames: this.data.selectedRecipes.map((item) => item.title),
+        ingredientNames: this.data.purchaseIngredients.map((item) => item.name),
+        temporaryRecipes: store.getTemporaryRecipes().filter((recipe) => (
+          this.data.selectedRecipes.some((item) => item.id === recipe.id)
+        )),
+        creatorName: store.getSettings().contactName || store.getSettings().collabDisplayName || "",
+      });
+      if (!result.ok) {
+        throw new Error(result.reason || "create_shared_order_failed");
+      }
+      this.setData({
+        shareId: result.shareId,
+        shareCreating: false,
+      });
+    } catch (error) {
+      this.setData({
+        shareCreating: false,
+        shareErrorText: "分享协作暂时不可用，可继续使用普通分享",
+      });
+    }
+  },
+
+  /**
+   * 读取朋友分享的云端采购清单和采购状态。
+   * @returns {Promise<void>} 清单读取完成后刷新页面展示。
+   */
+  async loadSharedOrder() {
+    try {
+      const result = await callCloud("get_shared_order", {
+        shareId: this.data.shareId,
+      });
+      if (!result.ok) {
+        throw new Error(result.reason || "get_shared_order_failed");
+      }
+      const order = result.order || {};
+      if (Array.isArray(order.temporaryRecipes) && order.temporaryRecipes.length) {
+        store.saveTemporaryRecipes(order.temporaryRecipes);
+      }
+      const state = this.buildShareState(order.status || "pending", order.claimantName || "");
+      this.setData({
+        sharedRecipeIds: order.recipeIds || [],
+        sharedIngredientIds: order.ingredientIds || [],
+        sharedIngredientCounts: order.ingredientCounts || [],
+        sharedIngredientNames: order.ingredientNames || [],
+        shareStatus: order.status || "pending",
+        shareErrorText: "",
+        ...state,
+      });
+      this.refresh();
+    } catch (error) {
+      this.setData({
+        shareErrorText: "分享清单暂时无法加载",
+        sharedRecipeIds: [],
+      });
+      this.refresh();
+    }
+  },
+
+  /**
+   * 分享接收人推进采购状态。
+   * @returns {Promise<void>} 状态更新并重新加载清单。
+   */
+  async updateShareStatus() {
+    if (!this.data.shareId || this.data.shareUpdating || !this.data.shareActionText) {
+      return;
+    }
+    const nextStatus = this.data.shareStatus === "pending" ? "purchasing" : "completed";
+    this.setData({ shareUpdating: true });
+    try {
+      const settings = store.getSettings();
+      const result = await callCloud("update_shared_order_status", {
+        shareId: this.data.shareId,
+        status: nextStatus,
+        displayName: settings.contactName || settings.collabDisplayName || "",
+      });
+      if (!result.ok) {
+        throw new Error(result.reason || "update_shared_order_status_failed");
+      }
+      await this.loadSharedOrder();
+      wx.showToast({
+        title: nextStatus === "completed" ? "已标记买好" : "已认领采购",
+        icon: "none",
+      });
+    } catch (error) {
+      wx.showToast({
+        title: "状态更新失败，请重试",
+        icon: "none",
+      });
+    } finally {
+      this.setData({ shareUpdating: false });
     }
   },
 
@@ -280,41 +321,8 @@ Page({
     }
   },
 
-  closePickedPanel() {
-    this.setData({
-      pickedPanelOpen: false,
-      pickedPanelClass: "picked-sheet",
-    });
-  },
-
-  togglePickedPanel() {
-    if (!this.data.recipeCount) {
-      wx.showToast({
-        title: "先选菜谱",
-        icon: "none",
-      });
-      return;
-    }
-    const nextOpen = !this.data.pickedPanelOpen;
-    this.setData({
-      pickedPanelOpen: nextOpen,
-      pickedPanelClass: nextOpen ? "picked-sheet picked-sheet-open" : "picked-sheet",
-    });
-  },
-
-  setActivePicked(event) {
-    const { id } = event.currentTarget.dataset;
-    if (!id) {
-      return;
-    }
-    this.setData({
-      activePickedId: id,
-    });
-    this.refresh();
-  },
-
   /**
-   * 保存采购清单并同步给已绑定协作人。
+   * 保存采购清单到本机订单。
    * @returns {Promise<void>} 提交结束后进入订单详情页。
    */
   async submitOrder() {
@@ -323,24 +331,8 @@ Page({
     }
     if (this.data.isShared) {
       wx.showToast({
-        title: "这是分享的清单，只能查看",
+        title: "分享清单不能重复提交",
         icon: "none",
-      });
-      return;
-    }
-    if (!store.isSetupCompleted()) {
-      wx.showModal({
-        title: "完成设置后才能提交",
-        content: "当前可以继续浏览菜品和采购清单，完成基础设置后才能提交。",
-        confirmText: "去设置",
-        cancelText: "继续浏览",
-        success(result) {
-          if (result.confirm) {
-            wx.navigateTo({
-              url: "/pages/settings/index?source=setup&return=match",
-            });
-          }
-        },
       });
       return;
     }
@@ -353,58 +345,28 @@ Page({
       return;
     }
 
-    const plan = buildMenuPlan(selectedRecipeIds);
+    const plan = buildMenuPlan(selectedRecipeIds, store.getTemporaryRecipes());
+    const createdAt = new Date();
     const orderId = generateOrderId();
-    const recipeNames = plan.recipes.map((item) => item.title);
-    const ingredientNames = plan.ingredients.map((item) => item.name);
     const order = {
       id: orderId,
+      title: formatOrderTitle(createdAt),
       recipe_ids: selectedRecipeIds,
       ingredient_ids: plan.ingredients.map((item) => item.id),
       all_ingredient_ids: plan.ingredients.map((item) => item.id),
-      created_at: formatTime(new Date()),
+      created_at: formatTime(createdAt),
       status: "submitted",
       channel: "local_order",
-      receiver_openid: this.data.selectedReceiverOpenid,
-      receiver_name: this.data.selectedReceiverName,
-      collab_status: this.data.selectedReceiverOpenid ? "pending" : "self",
+      share_id: this.data.shareId,
+      collab_status: this.data.shareId ? "shared" : "self",
     };
 
     this.setData({ submitting: true });
-    // 先保存本机记录，协作通知失败时用户仍可回看采购清单。
     store.saveOrder(order);
-    try {
-      const result = await callCloud("submit_collab_order", {
-        orderId,
-        receiverOpenid: this.data.selectedReceiverOpenid,
-        recipeIds: selectedRecipeIds,
-        ingredientIds: plan.ingredients.map((item) => item.id),
-        recipeNames,
-        ingredientNames,
-      });
-      if (!result.ok) {
-        throw new Error(result.reason || "submit_collab_order_failed");
-      }
-
-      const recipientCount = Number(result.recipientCount || 0);
-      store.saveOrder(Object.assign({}, order, {
-        channel: "collab_order",
-        collab_status: recipientCount > 0 ? "sent" : "self",
-        recipient_count: recipientCount,
-      }));
-      wx.showToast({
-        title: recipientCount > 0 ? `已发送给 ${this.data.selectedReceiverName}` : "已保存到我的订单",
-        icon: "none",
-      });
-    } catch (error) {
-      store.saveOrder(Object.assign({}, order, {
-        collab_status: this.data.selectedReceiverOpenid ? "failed" : "self",
-      }));
-      wx.showToast({
-        title: "清单已保存，协作通知失败",
-        icon: "none",
-      });
-    }
+    wx.showToast({
+      title: "已保存到我的订单",
+      icon: "none",
+    });
 
     store.clearPickedRecipes();
     this.setData({ submitting: false });
@@ -420,11 +382,4 @@ Page({
     });
   },
 
-  goSetup() {
-    wx.navigateTo({
-      url: "/pages/settings/index?source=setup&return=match",
-    });
-  },
-
 });
-

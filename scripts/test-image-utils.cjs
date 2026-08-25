@@ -31,11 +31,15 @@ function loadCommonJsModule(filePath, overrides = {}) {
 const root = path.resolve(__dirname, "..");
 const imagePath = path.join(root, "utils/image.js");
 const imageConfigSource = fs.readFileSync(path.join(root, "utils/image-config.js"), "utf8");
+const imageSource = fs.readFileSync(imagePath, "utf8");
 
 assert.doesNotMatch(imageConfigSource, /wx\.cloud\.getCurrentEnv/);
 assert.match(imageConfigSource, /return normalizeBaseUrl\(CLOUD_STORAGE_PREFIX\)/);
 assert.match(imageConfigSource, /CLOUD_ENV_ID = "cloud1-d9gyz89t28481efb1"/);
 assert.match(imageConfigSource, /cloud:\/\/\$\{CLOUD_ENV_ID\}\.\$\{CLOUD_STORAGE_BUCKET\}/);
+assert.match(imageSource, /TEMP_URL_STORAGE_KEY/);
+assert.match(imageSource, /loadPersistentTempUrlCache/);
+assert.match(imageSource, /savePersistentTempUrlCache/);
 
 const emptyImage = loadCommonJsModule(imagePath, {
   "./image-config": {

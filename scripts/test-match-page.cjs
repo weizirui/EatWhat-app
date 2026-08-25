@@ -15,20 +15,14 @@ assert.match(template, /purchaseIngredientsText/);
 assert.match(template, /selectedRecipesText/);
 assert.match(template, /提交清单/);
 
-assert.match(template, /class="\{\{pickedPanelClass\}\}"/);
-assert.match(template, /activePickedDetail\.caloriesText/);
-assert.match(template, /activePickedDetail\.proteinText/);
-assert.match(template, /activePickedDetail\.suitableTags/);
-assert.match(template, /activePickedDetail\.swapLines/);
-assert.match(template, /activePickedDetail\.conditionAdvice/);
-assert.match(template, /activePickedDetail\.stepLines/);
-assert.match(styles, /\.picked-body\s*\{[\s\S]*(?<!-)height:\s*66vh;/);
-assert.match(styles, /\.picked-sheet\s*\{[\s\S]*z-index:\s*-1;/);
-assert.match(styles, /\.picked-sheet-open\s*\{[\s\S]*z-index:\s*26;/);
+assert.doesNotMatch(template, /pickedPanelClass/);
+assert.doesNotMatch(template, /activePickedDetail/);
+assert.doesNotMatch(styles, /\.picked-sheet/);
 assert.match(styles, /\.more-recipes-card\s*\{/);
 
-assert.match(template, /联系客服/);
-assert.match(template, /open-type="contact"/);
+assert.doesNotMatch(template, /菜谱档案/);
+assert.doesNotMatch(template, /联系客服/);
+assert.doesNotMatch(template, /open-type="contact"/);
 
 assert.equal(template.includes("订单信息"), false);
 assert.equal(template.includes("联系人"), false);

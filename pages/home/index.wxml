@@ -5,9 +5,6 @@
         <view class="market-eyebrow">今日菜市</view>
         <view class="market-title">选菜谱，自动出食材</view>
       </view>
-      <view class="market-hero-links">
-        <text class="muted mini-link" bindtap="goSettings">设置</text>
-      </view>
     </view>
     <view class="market-subtitle">已选 {{selectedRecipeCount}} 道菜，自动汇总 {{totalIngredientCount}} 项主食材，支持搜索、分类和真实图片浏览。</view>
     <view class="market-search">
@@ -23,13 +20,71 @@
     </view>
   </view>
 
-  <view class="week-plan-entry" hover-class="week-plan-entry-pressed" bindtap="goPlan">
-    <view class="week-plan-entry-copy">
-      <view class="week-plan-entry-kicker">一周三餐</view>
-      <view class="week-plan-entry-title">还不知道吃什么？</view>
-      <view class="week-plan-entry-sub">点我自动生成一周菜单</view>
+  <view class="home-fold-card">
+    <view class="home-fold-head" bindtap="toggleWeekPlanOpen">
+      <view>
+        <view class="home-fold-kicker">一周三餐</view>
+        <view class="home-fold-title">还不知道吃什么？</view>
+        <view class="home-fold-sub">自动生成一周菜单</view>
+      </view>
+      <view class="{{weekPlanOpen ? 'home-fold-arrow home-fold-arrow-open' : 'home-fold-arrow'}}">⌄</view>
     </view>
-    <view class="week-plan-entry-action" aria-label="进入本周菜单">›</view>
+    <view class="home-fold-body" wx:if="{{weekPlanOpen}}">
+      <button class="week-plan-entry-button" bindtap="goPlan">去生成一周菜单</button>
+    </view>
+  </view>
+
+  <view class="ai-recipe-box home-fold-card">
+    <view class="home-fold-head" bindtap="toggleAiRecipeOpen">
+      <view>
+        <view class="home-fold-kicker">想吃什么</view>
+        <view class="home-fold-title">输入菜名或食材</view>
+        <view class="home-fold-sub">生成 3 道菜和配图</view>
+      </view>
+      <view class="{{aiRecipeOpen ? 'home-fold-arrow home-fold-arrow-open' : 'home-fold-arrow'}}">⌄</view>
+    </view>
+    <view class="home-fold-body" wx:if="{{aiRecipeOpen}}">
+      <view class="ai-recipe-input-row">
+        <input
+          class="ai-recipe-input"
+          placeholder="比如：鲍鱼、牛蛙、鸡翅"
+          value="{{aiKeyword}}"
+          bindinput="updateAiKeyword"
+          confirm-type="done"
+          bindconfirm="generateAiRecipes"
+        />
+        <button class="ai-recipe-btn" bindtap="generateAiRecipes" loading="{{aiGenerating}}" disabled="{{aiGenerating}}">
+          生成
+        </button>
+      </view>
+      <view class="ai-recipe-error" wx:if="{{aiErrorText}}">{{aiErrorText}}</view>
+      <view class="ai-recipe-list" wx:if="{{aiRecipeSuggestions.length}}">
+        <view wx:for="{{aiRecipeSuggestions}}" wx:key="id" class="ai-recipe-card">
+          <view class="ai-recipe-card-body">
+            <image
+              wx:if="{{item.hasImage && !item.imageFailed}}"
+              class="ai-recipe-image"
+              src="{{item.image}}"
+              mode="aspectFill"
+              data-id="{{item.id}}"
+              binderror="handleAiRecipeImageError"
+            />
+            <view wx:else class="ai-recipe-image ai-recipe-image-fallback">
+              <view class="ai-recipe-image-emoji">{{item.emoji}}</view>
+              <view class="ai-recipe-image-copy">{{item.imageStatusText || item.title}}</view>
+            </view>
+            <view class="ai-recipe-card-main">
+              <view class="ai-recipe-card-title">{{item.emoji}} {{item.title}}</view>
+              <view class="ai-recipe-card-meta">{{item.category}} · {{item.minutes}} 分钟 · {{item.difficulty}}</view>
+              <view class="ai-recipe-card-ingredients">主食材：{{item.ingredientSummary}}</view>
+            </view>
+          </view>
+          <button class="{{item.stateClass}}" data-id="{{item.id}}" bindtap="addAiRecipe">
+            {{item.stateText}}
+          </button>
+        </view>
+      </view>
+    </view>
   </view>
 
   <view class="section">

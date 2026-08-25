@@ -65,8 +65,8 @@ assert.notDeepEqual(
 assert.doesNotMatch(landingTemplate, /爆款推荐|hotRecipes|seasonalRecipes/);
 assert.match(landingTemplate, /fatLossRecipes/);
 assert.match(landingTemplate, /本周计划/);
-assert.match(landingTemplate, /class="pu-settings-fab"/);
-assert.match(landingStyles, /\.pu-settings-fab\s*\{[\s\S]*left:\s*24rpx;[\s\S]*bottom:\s*40rpx;/);
+assert.doesNotMatch(landingTemplate, /class="pu-settings-fab"/);
+assert.doesNotMatch(landingStyles, /\.pu-settings-fab/);
 assert.match(landingStyles, /\.pu-banner-btn\s*\{[\s\S]*background:\s*#23a356;/);
 assert.match(landingStyles, /\.landing-page\s*\{[\s\S]*gap:\s*24rpx;/);
 assert.match(landingStyles, /\.pu-grid-list\s*\{[\s\S]*flex-wrap:\s*wrap;/);

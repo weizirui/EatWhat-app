@@ -2,6 +2,7 @@ const STORAGE_KEYS = {
   selectedIngredients: "qx_selected_ingredients",
   suggestedPurchaseIngredients: "qx_suggested_purchase_ingredients",
   pickedRecipes: "qx_picked_recipes",
+  temporaryRecipes: "qx_temporary_recipes",
   favoriteRecipes: "qx_favorite_recipes",
   settings: "qx_mini_settings",
   lastOrder: "qx_last_order",
@@ -98,6 +99,29 @@ function getPickedRecipes() {
   return readStorage(STORAGE_KEYS.pickedRecipes, []);
 }
 
+function getTemporaryRecipes() {
+  return readStorage(STORAGE_KEYS.temporaryRecipes, []);
+}
+
+/**
+ * 保存 AI 临时菜谱，供本次点菜和采购清单使用。
+ * @param {object[]} recipes AI 生成的菜谱。
+ * @returns {object[]} 已保存的临时菜谱。
+ */
+function saveTemporaryRecipes(recipes) {
+  const next = (recipes || [])
+    .filter((item) => item && item.id && item.title)
+    .concat(getTemporaryRecipes())
+    .reduce((acc, item) => {
+      if (!acc.some((entry) => entry.id === item.id)) {
+        acc.push(item);
+      }
+      return acc;
+    }, [])
+    .slice(0, 30);
+  return writeStorage(STORAGE_KEYS.temporaryRecipes, next);
+}
+
 function togglePickedRecipe(id) {
   const picked = getPickedRecipes();
   const next = picked.includes(id)
@@ -148,12 +172,11 @@ function updateSettings(patch) {
 
 function isSetupCompleted(settings) {
   const current = settings || getSettings();
-  const hasIdentity = Boolean(
+  return Boolean(
     current.setupCompleted
     || String(current.contactName || "").trim()
     || String(current.collabDisplayName || "").trim()
   );
-  return hasIdentity && Boolean(String(current.defaultReceiverOpenid || "").trim());
 }
 
 function resetSettings() {
@@ -206,6 +229,8 @@ module.exports = {
   clearSuggestedPurchaseIngredients,
   getAllIngredientIds,
   getPickedRecipes,
+  getTemporaryRecipes,
+  saveTemporaryRecipes,
   togglePickedRecipe,
   setPickedRecipes,
   addPickedRecipes,

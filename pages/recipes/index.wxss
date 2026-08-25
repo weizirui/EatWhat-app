@@ -100,19 +100,35 @@
   line-height: 1.5;
 }
 
-.share-recipe-btn {
-  height: 88rpx;
-  line-height: 88rpx;
-  border-radius: 999rpx;
-  background: #23a356;
-  color: #ffffff;
-  font-size: 30rpx;
-  font-weight: 700;
-  margin-top: 8rpx;
+.recipe-filter-bar {
+  width: 100%;
+  white-space: nowrap;
 }
 
-.share-recipe-btn::after {
-  border: none;
+.recipe-filter-row {
+  display: inline-flex;
+  gap: 12rpx;
+  padding: 0 2rpx 2rpx;
+}
+
+.recipe-filter {
+  min-width: 112rpx;
+  height: 58rpx;
+  line-height: 58rpx;
+  padding: 0 20rpx;
+  border-radius: 999rpx;
+  background: #ffffff;
+  color: #607268;
+  border: 2rpx solid rgba(47, 74, 58, 0.08);
+  font-size: 24rpx;
+  font-weight: 700;
+  text-align: center;
+}
+
+.recipe-filter-active {
+  background: #23a356;
+  color: #ffffff;
+  border-color: #23a356;
 }
 
 .profile-grid {

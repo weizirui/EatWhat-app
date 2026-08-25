@@ -201,12 +201,6 @@ Page({
     });
   },
 
-  goSettings() {
-    wx.navigateTo({
-      url: "/pages/settings/index?source=manage",
-    });
-  },
-
   pickRecipe(event) {
     const { id } = event.currentTarget.dataset;
     store.setPickedRecipes([id]);

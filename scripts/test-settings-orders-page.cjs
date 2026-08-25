@@ -10,19 +10,21 @@ const successTemplate = fs.readFileSync(path.join(root, "pages/checkout-success/
 const storeScript = fs.readFileSync(path.join(root, "utils/store.js"), "utf8");
 
 assert.doesNotMatch(settingsTemplate, /默认用餐时间偏移/);
-assert.match(settingsTemplate, /先完成基础设置/);
-assert.match(settingsTemplate, /保存全部设置并进入/);
-assert.match(settingsTemplate, /暂时跳过，先看菜品/);
-assert.match(settingsTemplate, /输入采购人的邀请码/);
-assert.match(settingsTemplate, /默认采购人/);
-assert.match(settingsTemplate, /未绑定默认采购人时只能跳过浏览/);
-assert.match(settingsTemplate, /保存基础设置/);
+assert.doesNotMatch(settingsTemplate, /先完成基础设置/);
+assert.doesNotMatch(settingsTemplate, /保存全部设置并进入/);
+assert.doesNotMatch(settingsTemplate, /暂时跳过，先看菜品/);
+assert.doesNotMatch(settingsTemplate, /默认采购人/);
+assert.doesNotMatch(settingsTemplate, /采购任务/);
+assert.doesNotMatch(settingsTemplate, /未绑定默认采购人时只能跳过浏览/);
+assert.doesNotMatch(settingsTemplate, /保存基础设置/);
 assert.match(settingsTemplate, /已保存订单/);
+assert.match(settingsTemplate, /\{\{item\.title\}\}/);
 assert.match(settingsTemplate, /查看详情/);
 assert.match(settingsScript, /openOrderDetail/);
 assert.match(settingsScript, /saveBasicSettings/);
 assert.match(settingsScript, /skipSetup/);
 assert.match(successScript, /getOrderById/);
+assert.match(successScript, /formatOrderTitle/);
 assert.match(successScript, /setNavigationBarTitle/);
 assert.match(successScript, /source === "settings"/);
 assert.match(successScript, /navigateBack/);
@@ -32,6 +34,7 @@ assert.match(successScript, /submit_collab_order/);
 assert.match(successScript, /\["failed", "pending"\]/);
 assert.match(successTemplate, /重新发送协作清单/);
 assert.match(successTemplate, /订单概览/);
+assert.match(successTemplate, /订单标题/);
 assert.match(storeScript, /function getOrderById/);
 
 console.log("settings orders page tests passed");

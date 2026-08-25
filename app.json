@@ -1,6 +1,5 @@
 {
   "pages": [
-    "pages/settings/index",
     "pages/landing/index",
     "pages/home/index",
     "pages/match/index",
@@ -8,6 +7,7 @@
     "pages/recipes/index",
     "pages/plan/index",
     "pages/tasks/index",
+    "pages/settings/index",
     "pages/image-admin/index"
   ],
   "window": {
